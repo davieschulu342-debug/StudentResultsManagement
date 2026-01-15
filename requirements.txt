@@ -4,4 +4,5 @@ whitenoise
 psycopg2-binary
 django-widget-tweaks
 django-simple-history
-reportlab
+reportlab==4.1.0
+
