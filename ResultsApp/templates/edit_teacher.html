@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Edit Teacher: {{ teacher.teacher_name }}</h3>
+        </div>
+        <div class="card-body">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+
+                <div class="row g-3">
+                    <!-- Email -->
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        {{ form.email|add_class:"form-control" }}
+                        <div class="text-danger">{{ form.email.errors }}</div>
+                    </div>
+
+                    <!-- Teacher Name -->
+                    <div class="col-md-6">
+                        <label class="form-label">Teacher Name</label>
+                        {{ form.teacher_name|add_class:"form-control" }}
+                        <div class="text-danger">{{ form.teacher_name.errors }}</div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="col-md-6">
+                        <label class="form-label">Password <small class="text-muted">(leave blank to keep current)</small></label>
+                        {{ form.password|add_class:"form-control" }}
+                        <div class="text-danger">{{ form.password.errors }}</div>
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="col-md-6">
+                        <label class="form-label">Confirm Password</label>
+                        {{ form.confirm_password|add_class:"form-control" }}
+                        <div class="text-danger">{{ form.confirm_password.errors }}</div>
+                    </div>
+
+                    <!-- Gender -->
+                    <div class="col-md-6">
+                        <label class="form-label">Gender</label>
+                        {{ form.gender|add_class:"form-select" }}
+                        <div class="text-danger">{{ form.gender.errors }}</div>
+                    </div>
+
+                    <!-- Marital Status -->
+                    <div class="col-md-6">
+                        <label class="form-label">Marital Status</label>
+                        {{ form.marital_status|add_class:"form-select" }}
+                        <div class="text-danger">{{ form.marital_status.errors }}</div>
+                    </div>
+
+                    <!-- Employee Number -->
+                    <div class="col-md-6">
+                        <label class="form-label">Employee Number</label>
+                        {{ form.emp_no|add_class:"form-control" }}
+                        <div class="text-danger">{{ form.emp_no.errors }}</div>
+                    </div>
+
+                    <!-- Department -->
+                    <div class="col-md-6">
+                        <label class="form-label">Department</label>
+                        {{ form.department|add_class:"form-select" }}
+                        <div class="text-danger">{{ form.department.errors }}</div>
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div class="col-md-6">
+                        <label class="form-label">Phone Number</label>
+                        {{ form.phone_no|add_class:"form-control" }}
+                        <div class="text-danger">{{ form.phone_no.errors }}</div>
+                    </div>
+
+                    <!-- Dates -->
+                    <div class="col-md-4">
+                        <label class="form-label">Date First Appointment</label>
+                        {{ form.date_first_app|add_class:"form-control"|attr:"type=date" }}
+                        <div class="text-danger">{{ form.date_first_app.errors }}</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Date Current Appointment</label>
+                        {{ form.date_current_app|add_class:"form-control"|attr:"type=date" }}
+                        <div class="text-danger">{{ form.date_current_app.errors }}</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Date of Retirement</label>
+                        {{ form.date_retirement|add_class:"form-control"|attr:"type=date" }}
+                        <div class="text-danger">{{ form.date_retirement.errors }}</div>
+                    </div>
+
+                    <!-- Qualifications -->
+                    <div class="col-md-6">
+                        <label class="form-label">Academic Qualification</label>
+                        {{ form.acad_qualif|add_class:"form-control" }}
+                        <div class="text-danger">{{ form.acad_qualif.errors }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Professional Qualification</label>
+                        {{ form.prof_qualif|add_class:"form-control" }}
+                        <div class="text-danger">{{ form.prof_qualif.errors }}</div>
+                    </div>
+
+                    <!-- Major/Minor -->
+                    <div class="col-md-6">
+                        <label class="form-label">Major</label>
+                        {{ form.major|add_class:"form-control" }}
+                        <div class="text-danger">{{ form.major.errors }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Minor</label>
+                        {{ form.minor|add_class:"form-control" }}
+                        <div class="text-danger">{{ form.minor.errors }}</div>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-success">Update Teacher</button>
+                    <a href="{% url 'manage_teachers' %}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

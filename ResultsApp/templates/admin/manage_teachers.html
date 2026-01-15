@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-4">Manage Teachers</h3>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Teacher's Name</th>
+                <th>Email Address</th>
+                <th>Department</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for teacher in teachers %}
+            <tr>
+                <td>{{ teacher.teacher_name }}</td>
+                <td>{{ teacher.user.email }}</td>
+                <td>{{ teacher.department.department_name }}</td>
+
+                <td>
+                    <a href="{% url 'edit_teacher' teacher.id %}" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="{% url 'delete_teacher' teacher.id %}" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">No teachers found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

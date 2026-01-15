@@ -1,0 +1,137 @@
+
+{% extends 'admin_base.html' %}
+{% load static %}
+{% block content %}
+<style>
+    .edit-card {
+        border-radius: 18px;
+        overflow: hidden;
+        background: linear-gradient(145deg, #ffffff, #f1f4f9);
+    }
+
+    .edit-header {
+        background: linear-gradient(90deg, #0d6efd, #0a58ca);
+        padding: 1.2rem;
+    }
+
+    .edit-header h5 {
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .form-label {
+        font-size: 0.9rem;
+        color: #495057;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 0.6rem 0.75rem;
+        transition: all 0.2s ease-in-out;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.15rem rgba(13,110,253,.25);
+    }
+
+    .btn-decor {
+        border-radius: 30px;
+        padding: 0.45rem 1.6rem;
+        font-weight: 500;
+        transition: all 0.25s ease;
+    }
+
+    .btn-decor i {
+        transition: transform 0.25s ease;
+    }
+
+    .btn-decor:hover i {
+        transform: translateX(3px);
+    }
+
+    .btn-back {
+        background-color: #f1f3f5;
+        color: #495057;
+    }
+
+    .btn-back:hover {
+        background-color: #e9ecef;
+    }
+
+    .btn-save {
+        background: linear-gradient(90deg, #198754, #157347);
+        color: #fff;
+        border: none;
+    }
+
+    .btn-save:hover {
+        background: linear-gradient(90deg, #157347, #146c43);
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+
+            <div class="card edit-card shadow-lg border-0">
+
+                <div class="edit-header text-white text-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-school me-2"></i>Edit Class Details
+                    </h5>
+                </div>
+
+                <div class="card-body">
+
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Class Name</label>
+                            <input type="text" name="class_name"
+                                   class="form-control"
+                                   value="{{ cls.class_name }}" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Numeric Name</label>
+                            <input type="text" name="numeric_name"
+                                   class="form-control"
+                                   value="{{ cls.numeric_name }}" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Section</label>
+                            <input type="text" name="section"
+                                   class="form-control"
+                                   value="{{ cls.section }}" required>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{% url 'manage_classes' %}"
+                               class="btn btn-decor btn-back">
+                                <i class="fas fa-arrow-left me-1"></i>Back
+                            </a>
+
+                            <button type="submit"
+                                    class="btn btn-decor btn-save">
+                                Update <i class="fas fa-check ms-1"></i>
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

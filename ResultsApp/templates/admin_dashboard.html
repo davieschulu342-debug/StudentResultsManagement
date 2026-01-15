@@ -1,0 +1,120 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block content %}
+<h2 class="mb-4">
+    <i class="fas fa-tachometer-alt"></i> Admin Dashboard
+</h2>
+
+<div class="row g-4">
+
+    <!-- Students -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card text-white bg-success shadow-sm dashboard-card">
+            <div class="card-body d-flex justify-content-between">
+                <div>
+                    <h3>{{ total_students }}</h3>
+                    <p class="mb-0">Students</p>
+                </div>
+                <i class="fas fa-users fa-2x"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notices -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card text-white bg-primary shadow-sm dashboard-card">
+            <div class="card-body d-flex justify-content-between">
+                <div>
+                    <h3>{{ total_notices }}</h3>
+                    <p class="mb-0">Notices Posted</p>
+                </div>
+                <i class="fas fa-bullhorn fa-2x"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subjects -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card text-white bg-danger shadow-sm dashboard-card">
+            <div class="card-body d-flex justify-content-between">
+                <div>
+                    <h3>{{ total_subjects }}</h3>
+                    <p class="mb-0">Subjects</p>
+                </div>
+                <i class="fas fa-book fa-2x"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Classes -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card text-white bg-success shadow-sm dashboard-card">
+            <div class="card-body d-flex justify-content-between">
+                <div>
+                    <h3>{{ total_classes }}</h3>
+                    <p class="mb-0">Classes</p>
+                </div>
+                <i class="fas fa-book-reader fa-2x"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card text-white bg-warning shadow-sm dashboard-card">
+            <div class="card-body d-flex justify-content-between">
+                <div class="w-100">
+                    <h3>{{ results_percentage }}%</h3>
+                    <p class="mb-1">
+                        Results Entered ({{ total_results }})
+                    </p>
+
+                    <!-- ✅ Progress Bar -->
+                    <div class="progress results-progress">
+                        <div class="progress-bar bg-dark" role="progressbar"
+                            data-percent="{{ results_percentage|default:0 }}">
+                        </div>
+
+                    </div>
+                </div>
+
+                <i class="fas fa-percent fa-2x ms-2"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teachers -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card text-white bg-info shadow-sm dashboard-card">
+            <div class="card-body d-flex justify-content-between">
+                <div>
+                    <h3>{{ total_teachers }}</h3>
+                    <p class="mb-0">Teachers</p>
+                </div>
+                <i class="fas fa-user-graduate fa-2x"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Departments -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card text-white bg-secondary shadow-sm dashboard-card">
+            <div class="card-body d-flex justify-content-between">
+                <div>
+                    <h3>{{ total_departments }}</h3>
+                    <p class="mb-0">Departments</p>
+                </div>
+                <i class="fas fa-university fa-2x"></i>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="mt-4">
+    <img src="{% static 'images/back.png' %}" alt="SRMS Dashboard Banner"
+        class="img-fluid rounded shadow dashboard-banner">
+</div>
+
+{% endblock %}

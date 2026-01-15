@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Enter Marks for {{ class_selected }} - {{ subject_selected }}</h2>
+
+    <form method="post" class="p-4 bg-white rounded shadow">
+        {% csrf_token %}
+        <input type="hidden" name="class_id" value="{{ class_selected.id }}">
+        <input type="hidden" name="subject_id" value="{{ subject_selected.id }}">
+        <input type="hidden" name="test_type" value="{{ test_type }}">
+        <input type="hidden" name="term" value="{{ term }}">
+        <input type="hidden" name="year" value="{{ year }}">
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>S.No</th>
+                    <th>Student Name</th>
+                    <th>Exam Number</th>
+                    <th>Marks</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ student.student_name }}</td>
+                    <td>{{ student.exam_no }}</td>
+                    <td>{{ student.marks }}</td>
+                    <td>
+                        <input type="number" name="marks_{{ student.id }}" class="form-control" required>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No students found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <button type="submit" name="save_marks" class="btn btn-success">Save Results</button>
+    </form>
+</div>
+{% endblock %}

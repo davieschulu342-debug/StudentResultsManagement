@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center"><i class="fas fa-tasks text-primary"></i> Add Subject Combination</h2>
+
+    <!-- Success / Error Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert 
+                {% if message.tags == 'success' %}alert-success
+                {% elif message.tags == 'error' %}alert-danger
+                {% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Form -->
+    <form method="post" class="p-5 bg-white rounded shadow-lg">
+        {% csrf_token %}
+
+        <div class="mb-4">
+            <label class="form-label fw-bold">Class</label>
+            <select name="student_class" class="form-select form-select-lg border-primary" required>
+                <option value="">Select Class</option>
+                {% for cls in classes %}
+                    <option value="{{ cls.id }}">{{ cls.class_name }} {{ cls.numeric_name }} {{ cls.section }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label fw-bold">Subject</label>
+            <select name="subject" class="form-select form-select-lg border-primary" required>
+                <option value="">Select Subject</option>
+                {% for sub in subjects %}
+                    <option value="{{ sub.id }}">{{ sub.subject_name }} - {{ sub.subject_code }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-gradient btn-lg fw-bold"><i class="fas fa-check-circle" ></i>Save</button>
+    </form>
+</div>
+
+<!-- Custom Styles -->
+<style>
+    /* Gradient Save Button */
+    .btn-gradient {
+        background: linear-gradient(90deg, #007bff, #00c6ff);
+        color: #fff;
+        border: none;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-gradient:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,123,255,0.5);
+    }
+
+    /* Add focus effect to selects */
+    select:focus {
+        outline: none;
+        border-color: #00c6ff !important;
+        box-shadow: 0 0 8px rgba(0,198,255,0.3);
+    }
+
+    /* Form background shadow */
+    form {
+        background-color: #ffffff;
+    }
+
+    body {
+        background-color: #f1f5f9;
+    }
+</style>
+{% endblock %}

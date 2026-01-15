@@ -1,0 +1,40 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+{% block content %}
+
+{% if messages %}
+{% for message in messages %}
+<div class="alert 
+            {% if message.tags == 'success' %}alert-success
+            {% elif message.tags == 'error' %}alert-danger
+            {% else %}alert-info{% endif %}">
+    {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="container">
+    <h2 class="mb-4">
+        <i class="fas fa-user-plus text-dark"></i> Add Notice
+    </h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">Notice Title</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Notice Details</label>
+            <textarea class="form-control" rows="5" id="details" name="details" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-check-circle"></i> Submit
+        </button>
+    </form>
+</div>
+
+{% endblock %}

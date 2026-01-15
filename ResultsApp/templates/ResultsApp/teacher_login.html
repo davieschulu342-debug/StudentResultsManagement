@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    .login-wrapper {
+        background: linear-gradient(135deg, #0d6efd, #6610f2);
+        min-height: 100vh;
+    }
+    .login-card {
+        max-width: 420px;
+        width: 100%;
+        border-radius: 1rem;
+        border: none;
+    }
+    .login-icon {
+        width: 70px;
+        height: 70px;
+        background: #0d6efd;
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: auto;
+        margin-top: -35px;
+    }
+    .form-control {
+        border-radius: 0.75rem;
+        padding: 12px;
+    }
+    .btn-primary {
+        border-radius: 0.75rem;
+        padding: 12px;
+        font-weight: 600;
+    }
+</style>
+
+<div class="login-wrapper d-flex justify-content-center align-items-center">
+    <div class="card login-card shadow-lg p-4">
+
+        <!-- Icon -->
+        <div class="login-icon">
+            <i class="fas fa-chalkboard-teacher fa-2x"></i>
+        </div>
+
+        <div class="card-body mt-3">
+
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <h4 class="fw-bold mb-1">Teacher Login</h4>
+                <p class="text-muted small">
+                    Sign in to access your dashboard
+                </p>
+            </div>
+
+            <!-- Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Form -->
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Email</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-envelope"></i>
+                        </span>
+                        <input type="email" name="email"
+                               class="form-control"
+                               placeholder="Enter your email" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                        <input type="password" name="password"
+                               class="form-control"
+                               placeholder="Enter your password" required>
+                    </div>
+                </div>
+
+                <button type="submit"
+                        class="btn btn-primary w-100 shadow-sm">
+                    Sign In
+                </button>
+            </form>
+
+            <!-- Forgot Password -->
+            <div class="text-center mt-3">
+                <a href="{% url 'forgot_password' %}"
+                   class="text-decoration-none fw-medium">
+                    Forgot Password?
+                </a>
+            </div>
+
+            <!-- Footer -->
+            <div class="text-center mt-4 small text-muted">
+                &copy; {{ now.year }} Muyombe Day Secondary School
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

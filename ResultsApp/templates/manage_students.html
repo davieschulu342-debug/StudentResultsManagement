@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4"><i class="fas fa-tasks text-dark"></i> Manage Students</h2>
+
+    <!-- Display messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert 
+                {% if message.tags == 'success' %}alert-success
+                {% elif message.tags == 'error' %}alert-danger
+                {% else %}alert-info{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>S.No</th>
+                <th>Name</th>
+                <th>Class</th>
+                <th>Exam No.</th>
+                <th>Phone No.</th>
+                <th>Gender</th>
+                <th>DOB</th>
+                <th>Address</th>
+                <th>Reg. Date</th>
+                <th>Updated On</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cls in classes %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ cls.student_name }}</td>
+                    <td>{{ cls.student_class }}</td>
+                    <td>{{ cls.exam_no }}</td>
+                    <td>{{ cls.phone_no }}</td>
+                    <td>{{ cls.gender }}</td>
+                    <td>{{ cls.dob }}</td>
+                    <td>{{ cls.address }}</td>
+                    <td>{{ cls.registration_date}}</td>
+                    <td>{{ cls.updation_date}}</td>
+                    <td>
+        <a href="{% url 'edit_student' cls.id %}" class="btn btn-sm btn-primary"><i class="fa-solid fa-edit"></i>Edit</a>
+        <a href="" class="btn btn-warning btn-sm"><i class="fa-solid fa-check"></i> View Results</a>
+                    {% csrf_token %}
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="11" class="text-center">No student found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

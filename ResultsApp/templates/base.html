@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+</head>
+<style>
+/* ---------- GLOBAL ---------- */
+body {
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+    background-color: #f8f9fa;
+}
+
+section {
+    position: relative;
+}
+
+/* ---------- HERO ---------- */
+.hero {
+    background: linear-gradient(135deg, #0d1b2a, #1b263b);
+}
+
+.hero h1 {
+    letter-spacing: -0.5px;
+}
+
+.hero .btn {
+    padding: 14px 28px;
+    border-radius: 12px;
+}
+
+/* ---------- CAROUSEL ---------- */
+.slider-img {
+    height: 420px;
+    object-fit: cover;
+}
+
+.carousel-caption {
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.carousel-indicators button {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+/* ---------- CARDS ---------- */
+.card {
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+
+/* ---------- ICONS ---------- */
+.icon-box {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    margin: 0 auto 15px;
+}
+
+/* ---------- NOTICE BOARD ---------- */
+.notice-card {
+    border-radius: 16px;
+}
+
+.notice-card li {
+    padding: 12px 10px;
+    font-size: 0.95rem;
+}
+
+/* ---------- FOOTER ---------- */
+footer {
+    background: #0d1b2a;
+}
+
+/* Carousel image size */
+.slider-img {
+    height: 420px;          /* desktop */
+    object-fit: cover;
+}
+
+/* Tablet */
+@media (max-width: 992px) {
+    .slider-img {
+        height: 340px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+    .slider-img {
+        height: 260px;
+    }
+}
+
+/* Improve caption readability */
+.carousel-caption {
+    background: rgba(0, 0, 0, 0.45);
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+}
+
+.icon-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    font-size: 20px;
+}
+
+.hover-card {
+    transition: all 0.3s ease;
+}
+
+.hover-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+}
+
+.hero-section {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #0d1b2a, #1b263b, #415a77);
+    position: relative;
+}
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.hero-section h1 {
+    letter-spacing: -0.5px;
+}
+
+.hero-section .btn-primary {
+    background-color: #2563eb;
+    border: none;
+}
+
+.hero-section .btn-primary:hover {
+    background-color: #1e40af;
+}
+
+.hero-section .btn-outline-light:hover {
+    background-color: #ffffff;
+    color: #1e293b;
+}
+
+.hero-section {
+    min-height: 70vh; /* Hero height */
+    display: flex;
+    align-items: center;
+    position: relative;
+    background: url('/static/images/hero-bg.jpg') center center/cover no-repeat;
+}
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    /* Gradient overlay on top of image */
+    background: linear-gradient(
+        rgba(0, 0, 0, 0.55), 
+        rgba(0, 0, 0, 0.55)
+    );
+}
+
+.hero-section h1 {
+    letter-spacing: -0.5px;
+}
+
+.hero-section .btn-primary {
+    background-color: #2563eb;
+    border: none;
+}
+
+.hero-section .btn-primary:hover {
+    background-color: #1e40af;
+}
+
+.hero-section .btn-outline-light:hover {
+    background-color: #ffffff;
+    color: #1e293b;
+}
+
+
+</style>
+
+<body>
+
+    {% block navbar %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-chalkboard-teacher me-1"></i> BupeSmart
+            </a>
+
+            <!-- Mobile toggle -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navbar links -->
+            <div class="collapse navbar-collapse justify-content-end" id="mainNavbar">
+                <ul class="navbar-nav align-items-lg-center">
+
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="/">
+                            <i class="fas fa-home me-1"></i> Home
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="{% url 'teacher_register' %}">
+                            <i class="fas fa-user-plus me-1"></i> Register
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="{% url 'teacher_login' %}">
+                            <i class="fas fa-sign-in-alt me-1"></i> Login
+                        </a>
+                    </li>
+
+                    <li class="nav-item ms-lg-2">
+                        <a class="nav-link border rounded px-3 text-warning border-warning" href="{% url 'admin_login' %}">
+                            <i class="fas fa-user-shield me-1"></i> Admin
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% endblock %}
+
+    <div class="container py-4">
+        {% block content %}
+        <!-- Page content will go here -->
+        {% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-white bg-dark pt-2 pb-1 shadow-sm mt-auto">
+        <div class="text-center">
+            <p class="mb-0">&copy; 2025 BupeSmart. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

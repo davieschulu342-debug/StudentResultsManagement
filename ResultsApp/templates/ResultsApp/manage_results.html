@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Manage Results</h2>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-md-2">
+            <label>Class</label>
+            <select id="class_select" class="form-select">
+                <option value="">--Select Class--</option>
+                {% for cls in classes %}
+                    <option value="{{ cls.id }}">{{ cls.class_name }} {{ cls.numeric_name }} {{ cls.section }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label>Subject</label>
+            <select id="subject_select" class="form-select">
+                <option value="">--Select Subject--</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label>Test Type</label>
+            <select id="test_select" class="form-select">
+                <option value="">--Select Test--</option>
+                <option value="TEST1">Test 1</option>
+                <option value="TEST2">Test 2</option>
+                <option value="EOT">End of Term</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label>Term</label>
+            <select id="term_select" class="form-select">
+                <option value="">--Select Term--</option>
+                <option value="TERM1">Term 1</option>
+                <option value="TERM2">Term 2</option>
+                <option value="TERM3">Term 3</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label>Year</label>
+            <input type="number" id="year_input" class="form-control" value="{{ now.year }}">
+        </div>
+
+        <div class="col-md-2 mt-4">
+            <button id="load_results" class="btn btn-primary mt-2">Load Results</button>
+        </div>
+    </div>
+
+    <!-- Results Table -->
+    <form id="results_form" method="POST">
+        {% csrf_token %}
+        <table class="table table-bordered table-striped" id="results_table">
+            <thead class="table-dark">
+                <tr>
+                    <th>S.No</th>
+                    <th>Student Name</th>
+                    <th>Exam Number</th>
+                    <th>Marks</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td colspan="4" class="text-center">Select filters and click "Load Results"</td></tr>
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-success mt-2">Update Results</button>
+        <button id="download_pdf" class="btn btn-danger mt-2">Download PDF</button>
+    </form>
+</div>
+
+<script>
+// ----- Load subjects when a class is selected -----
+document.getElementById("class_select").addEventListener("change", function() {
+    const classId = this.value;
+    const subjectSelect = document.getElementById("subject_select");
+
+    // Reset dropdown
+    subjectSelect.innerHTML = '<option value="">Loading...</option>';
+
+    if (!classId) {
+        subjectSelect.innerHTML = '<option value="">--Select Subject--</option>';
+        return;
+    }
+
+    fetch("{% url 'get_subjects_by_class' %}?class_id=" + classId)
+        .then(res => res.json())
+        .then(data => {
+            // Reset again
+            subjectSelect.innerHTML = '<option value="">--Select Subject--</option>';
+
+            if (!data.subjects || data.subjects.length === 0) {
+                subjectSelect.innerHTML = '<option value="">No subjects assigned</option>';
+                return;
+            }
+
+            data.subjects.forEach(sub => {
+                const option = document.createElement("option");
+                option.value = sub.id;
+                option.textContent = `${sub.name} (${sub.code})`;
+                subjectSelect.appendChild(option);
+            });
+        })
+        .catch(err => {
+            console.error("Error fetching subjects:", err);
+            subjectSelect.innerHTML = '<option value="">Error loading subjects</option>';
+        });
+});
+
+// ----- Load results -----
+document.getElementById("load_results").addEventListener("click", function(e) {
+    e.preventDefault();
+
+    const classId = document.getElementById("class_select").value;
+    const subjectId = document.getElementById("subject_select").value;
+    const testType = document.getElementById("test_select").value;
+    const term = document.getElementById("term_select").value;
+    const year = document.getElementById("year_input").value;
+
+    if (!classId || !subjectId || !testType || !term || !year) {
+        alert("Please select all filters first");
+        return;
+    }
+
+    fetch("{% url 'get_results' %}?class_id=" + classId +
+          "&subject_id=" + subjectId +
+          "&test_type=" + testType +
+          "&term=" + term +
+          "&year=" + year)
+    .then(res => {
+        if (!res.ok) throw new Error("Failed to fetch results");
+        return res.json();
+    })
+    .then(data => {
+        const tbody = document.querySelector("#results_table tbody");
+        tbody.innerHTML = "";
+
+        if (data.results.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center">No results found</td></tr>';
+            return;
+        }
+
+        data.results.forEach((r, idx) => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${idx+1}</td>
+                    <td>${r.student_name}</td>
+                    <td>${r.exam_no}</td>
+                    <td><input type="number" name="marks_${r.student_id}" value="${r.marks}" class="form-control"></td>
+                </tr>
+            `;
+        });
+    })
+    .catch(err => alert("Error loading results. See console."));
+});
+
+// ----- Update results via AJAX -----
+document.getElementById("results_form").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    fetch("{% url 'update_results' %}", {
+        method: "POST",
+        body: formData,
+        headers: { "X-CSRFToken": formData.get("csrfmiddlewaretoken") }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === "success") {
+            alert("Results updated successfully!");
+        } else {
+            alert("Failed to update results");
+        }
+    })
+    .catch(err => alert("Error submitting results. See console."));
+});
+
+// ----- Download PDF -----
+document.getElementById("download_pdf").addEventListener("click", function(e) {
+    e.preventDefault();
+
+    const classId = document.getElementById("class_select").value;
+    const subjectId = document.getElementById("subject_select").value;
+    const testType = document.getElementById("test_select").value;
+    const term = document.getElementById("term_select").value;
+    const year = document.getElementById("year_input").value;
+
+    if (!classId || !subjectId || !testType || !term || !year) {
+        alert("Please select all filters first");
+        return;
+    }
+
+    const url = "{% url 'download_results_pdf' %}" +
+                `?class_id=${classId}&subject_id=${subjectId}&test_type=${testType}&term=${term}&year=${year}`;
+    window.open(url, "_blank");
+});
+</script>
+{% endblock %}

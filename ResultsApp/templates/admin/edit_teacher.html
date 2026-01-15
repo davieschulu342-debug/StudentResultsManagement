@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Edit Teacher: {{ teacher.teacher_name }}</h2>
+
+    <form method="post" class="p-4 bg-white rounded shadow">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="mb-3">
+            <label>Email</label>
+            {{ form.email }}
+            {{ form.email.errors }}
+        </div>
+
+        <div class="mb-3">
+            <label>Password (leave blank to keep current)</label>
+            {{ form.password }}
+            {{ form.password.errors }}
+        </div>
+
+        <div class="mb-3">
+            <label>Confirm Password</label>
+            {{ form.confirm_password }}
+            {{ form.confirm_password.errors }}
+        </div>
+
+        <div class="mb-3">
+            <label>Teacher Name</label>
+            {{ form.teacher_name }}
+            {{ form.teacher_name.errors }}
+        </div>
+
+        <div class="mb-3">
+            <label>Gender</label>
+            {{ form.gender }}
+            {{ form.gender.errors }}
+        </div>
+
+        <div class="mb-3">
+            <label>Marital Status</label>
+            {{ form.marital_status }}
+            {{ form.marital_status.errors }}
+        </div>
+
+        <div class="mb-3">
+            <label>Employee Number</label>
+            {{ form.emp_no }}
+            {{ form.emp_no.errors }}
+        </div>
+
+        <div class="mb-3">
+            <label>Department</label>
+            {{ form.department }}
+            {{ form.department.errors }}
+        </div>
+
+        <div class="mb-3">
+            <label>Phone Number</label>
+            {{ form.phone_no }}
+            {{ form.phone_no.errors }}
+        </div>
+
+        <div class="mb-3">
+            <label>Date First Appointment</label>
+            {{ form.date_first_app }}
+            {{ form.date_first_app.errors }}
+        </div>
+
+        <div class="mb-3">
+            <label>Date Current Appointment</label>
+            {{ form.date_current_app }}
+            {{ form.date_current_app.errors }}
+        </div>
+
+        <div class="mb-3">
+            <label>Date Retirement</label>
+            {{ form.date_retirement }}
+            {{ form.date_retirement.errors }}
+        </div>
+
+        <div class="mb-3">
+            <label>Academic Qualification</label>
+            {{ form.acad_qualif }}
+            {{ form.acad_qualif.errors }}
+        </div>
+
+        <div class="mb-3">
+            <label>Professional Qualification</label>
+            {{ form.prof_qualif }}
+            {{ form.prof_qualif.errors }}
+        </div>
+
+        <div class="mb-3">
+            <label>Major</label>
+            {{ form.major }}
+            {{ form.major.errors }}
+        </div>
+
+        <div class="mb-3">
+            <label>Minor</label>
+            {{ form.minor }}
+            {{ form.minor.errors }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update Teacher</button>
+        <a href="{% url 'manage_teachers' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

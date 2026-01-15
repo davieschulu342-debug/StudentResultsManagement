@@ -1,0 +1,23 @@
+{% extends 'admin_base.html' %}
+{% block content %}
+
+<h2><i class="fas fa-edit"></i>Edit Notice</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label>Title</label>
+        <input type="text" name="title" class="form-control" value="{{ notice.title }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label>Details</label>
+        <textarea name="details" class="form-control" rows="5" required>{{ notice.details }}</textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success"><i class="fas fa-check-circle"></i> Update</button>
+    <a href="{% url 'manage_notice' %}" class="btn btn-secondary"><i class="fas fa-close"></i>Cancel</a>
+</form>
+
+{% endblock %}

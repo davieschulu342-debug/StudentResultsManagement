@@ -1,0 +1,199 @@
+
+{% extends 'admin_base.html' %}
+{% load static %}
+{% block content %}
+<style>
+    .edit-card {
+        border-radius: 18px;
+        overflow: hidden;
+        background: linear-gradient(145deg, #ffffff, #f1f4f9);
+    }
+
+    .edit-header {
+        background: linear-gradient(90deg, #0d6efd, #0a58ca);
+        padding: 1.2rem;
+    }
+
+    .edit-header h5 {
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .form-label {
+        font-size: 0.9rem;
+        color: #495057;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 0.6rem 0.75rem;
+        transition: all 0.2s ease-in-out;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.15rem rgba(13,110,253,.25);
+    }
+
+    .btn-decor {
+        border-radius: 30px;
+        padding: 0.45rem 1.6rem;
+        font-weight: 500;
+        transition: all 0.25s ease;
+    }
+
+    .btn-decor i {
+        transition: transform 0.25s ease;
+    }
+
+    .btn-decor:hover i {
+        transform: translateX(3px);
+    }
+
+    .btn-back {
+        background-color: #f1f3f5;
+        color: #495057;
+    }
+
+    .btn-back:hover {
+        background-color: #e9ecef;
+    }
+
+    .btn-save {
+        background: linear-gradient(90deg, #198754, #157347);
+        color: #fff;
+        border: none;
+    }
+
+    .btn-save:hover {
+        background: linear-gradient(90deg, #157347, #146c43);
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+
+            <div class="card edit-card shadow-lg border-0">
+
+                <div class="edit-header text-white text-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>Edit Student Info
+                    </h5>
+                </div>
+
+                <div class="card-body">
+<form method="POST">
+    {% csrf_token %}
+
+    <div class="mb-4">
+        <label class="form-label fw-semibold">Student Name</label>
+        <input type="text" name="student_name" class="form-control"
+            value="{{ student.student_name }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Select Class</label>
+        <select name="student_class" class="form-control">
+            {% for cls in classes %}
+                <option value="{{ cls.id }}" {% if student.student_class.id == cls.id %} selected {% endif %}>
+                    {{ cls.class_name }} {{cls.numeric_name}}{{cls.section}}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-4">
+        <label class="form-label fw-semibold">Examination Number</label>
+        <input type="text" name="exam_no" class="form-control" value="{{ student.exam_no }}" required>
+    </div>
+
+    <div class="mb-4">
+        <label class="form-label fw-semibold">Phone Number</label>
+        <input type="text" name="phone_no" class="form-control" value="{{ student.phone_no }}" required>
+    </div>
+
+    <div class="mb-3">
+    <label class="form-label">Gender</label>
+
+    <div class="form-check form-check-inline">
+        <input
+            type="radio"
+            class="form-check-input"
+            name="gender"
+            value="Male"
+            {% if student.gender == "Male" %}checked{% endif %}
+            required
+        >
+        <label class="form-check-label">Male</label>
+    </div>
+
+    <div class="form-check form-check-inline">
+        <input
+            type="radio"
+            class="form-check-input"
+            name="gender"
+            value="Female"
+            {% if student.gender == "Female" %}checked{% endif %}
+        >
+        <label class="form-check-label">Female</label>
+    </div>
+</div>
+
+    <div class="mb-4">
+        <label class="form-label fw-semibold">Date of Birth</label>
+        <input type="date" name="dob" class="form-control" value="{{ student.dob }}" required>
+    </div>
+
+    <div class="mb-4">
+        <label class="form-label fw-semibold">Physical Address</label>
+        <input type="text" name="address" class="form-control" value="{{ student.address }}" required>
+    </div>
+
+   <div class="mb-3">
+    <label class="form-label">Status</label>
+
+    <div class="form-check form-check-inline">
+        <input
+            type="radio"
+            class="form-check-input"
+            name="status"
+            value="Active"
+            {% if student.status == "Active" %}checked{% endif %}
+            required
+        >
+        <label class="form-check-label">Active</label>
+    </div>
+
+    <div class="form-check form-check-inline">
+        <input
+            type="radio"
+            class="form-check-input"
+            name="status"
+            value="Inactive"
+            {% if student.status == "Inactive" %}checked{% endif %}
+        >
+        <label class="form-check-label">Inactive</label>
+    </div>
+</div>
+
+
+
+    <div class="d-flex justify-content-between align-items-center">
+        <a href="{% url 'manage_students' %}" class="btn btn-decor btn-back">
+            <i class="fas fa-arrow-left me-1"></i>Back
+        </a>
+
+        <button type="submit" class="btn btn-decor btn-save">
+            Update <i class="fas fa-check ms-1"></i>
+        </button>
+    </div>
+
+</form>
+{% endblock %}

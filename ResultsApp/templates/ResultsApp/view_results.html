@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">View Results</h2>
+
+    <form id="filterForm" class="p-4 bg-white rounded shadow mb-4">
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <label>Class</label>
+                <select name="class" class="form-select" required>
+                    <option value="">--Select Class--</option>
+                    {% for cls in classes %}
+                    <option value="{{ cls.id }}">{{ cls.class_name }} {{ cls.numeric_name }} {{ cls.section }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <label>Subject</label>
+                <select name="subject" class="form-select" required>
+                    <option value="">--Select Subject--</option>
+                </select>
+            </div>
+
+            <div class="col-md-2 mb-3">
+                <label>Test Type</label>
+                <select name="test_type" class="form-select" required>
+                    <option value="">--Select Test--</option>
+                    <option value="TEST1">Test 1</option>
+                    <option value="TEST2">Test 2</option>
+                    <option value="EOT">End of Term</option>
+                </select>
+            </div>
+
+            <div class="col-md-2 mb-3">
+                <label>Term</label>
+                <select name="term" class="form-select" required>
+                    <option value="">--Select Term--</option>
+                    <option value="TERM1">Term 1</option>
+                    <option value="TERM2">Term 2</option>
+                    <option value="TERM3">Term 3</option>
+                </select>
+            </div>
+
+            <div class="col-md-2 mb-3">
+                <label>Year</label>
+                <input type="number" name="year" class="form-control" required value="{{ now.year }}">
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Show Results</button>
+    </form>
+
+    <div id="resultsContainer" class="table-responsive" style="display:none;">
+        <table class="table table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>S.No</th>
+                    <th>Student Name</th>
+                    <th>Exam Number</th>
+                    <th>Marks</th>
+                </tr>
+            </thead>
+            <tbody id="resultsBody">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function(){
+
+    // Load subjects when class is selected
+    $('select[name="class"]').change(function(){
+        var classId = $(this).val();
+        var subjectSelect = $('select[name="subject"]');
+        subjectSelect.html('<option>Loading subjects...</option>');
+
+        if(classId){
+            $.ajax({
+                url: "{% url 'get_subjects_by_class' %}",
+                data: {'class_id': classId},
+                dataType: 'json',
+                success: function(data){
+                    subjectSelect.empty();
+                    subjectSelect.append('<option value="">--Select Subject--</option>');
+                    $.each(data.subjects, function(i, subject){
+                        subjectSelect.append('<option value="'+subject.id+'">'+subject.name+'</option>');
+                    });
+                }
+            });
+        }
+    });
+
+    // Submit form to get results
+    $('#filterForm').submit(function(e){
+        e.preventDefault();
+        var data = $(this).serialize();
+
+        $.ajax({
+            url: "{% url 'get_results' %}",
+            data: data,
+            dataType: 'json',
+            success: function(response){
+                var tbody = $('#resultsBody');
+                tbody.empty();
+
+                if(response.results.length > 0){
+                    $.each(response.results, function(i, r){
+                        tbody.append('<tr>'+
+                            '<td>'+(i+1)+'</td>'+
+                            '<td>'+r.student_name+'</td>'+
+                            '<td>'+r.exam_no+'</td>'+
+                            '<td>'+r.marks+'</td>'+
+                        '</tr>');
+                    });
+                    $('#resultsContainer').show();
+                } else {
+                    tbody.append('<tr><td colspan="4" class="text-center">No results found</td></tr>');
+                    $('#resultsContainer').show();
+                }
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

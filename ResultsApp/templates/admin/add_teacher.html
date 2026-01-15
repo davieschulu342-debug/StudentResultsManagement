@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg rounded-4 border-0">
+                <div class="card-header bg-primary text-white rounded-top-4">
+                    <h3 class="mb-0">Add Teacher</h3>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" id="addTeacherForm">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            {% for field in form %}
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">{{ field.label }}</label>
+                                    {{ field|add_class:"form-control" }}
+                                    {% if field.errors %}
+                                        <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                    {% endif %}
+
+                                    <!-- Password Strength Indicator -->
+                                    {% if field.name == "password" %}
+                                    <div id="passwordStrength" class="mt-1 fw-bold"></div>
+                                    {% endif %}
+
+                                    <!-- Confirm Password Alert -->
+                                    {% if field.name == "confirm_password" %}
+                                    <div id="passwordMatchAlert" class="mt-1 fw-bold text-danger"></div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Add Teacher</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS for Password Strength & Match -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const password = document.getElementById('id_password');
+    const confirmPassword = document.getElementById('id_confirm_password');
+    const strengthDiv = document.getElementById('passwordStrength');
+    const matchDiv = document.getElementById('passwordMatchAlert');
+
+    const checkStrength = (pass) => {
+        let strength = 0;
+        if(pass.length >= 6) strength++;
+        if(pass.match(/[A-Z]/)) strength++;
+        if(pass.match(/[0-9]/)) strength++;
+        if(pass.match(/[\W]/)) strength++;
+
+        switch(strength){
+            case 0:
+            case 1:
+                strengthDiv.textContent = "Weak";
+                strengthDiv.style.color = "red";
+                break;
+            case 2:
+                strengthDiv.textContent = "Medium";
+                strengthDiv.style.color = "orange";
+                break;
+            case 3:
+            case 4:
+                strengthDiv.textContent = "Strong";
+                strengthDiv.style.color = "green";
+                break;
+        }
+    };
+
+    const checkMatch = () => {
+        if(confirmPassword.value === "") {
+            matchDiv.textContent = "";
+            return;
+        }
+        if(password.value !== confirmPassword.value){
+            matchDiv.textContent = "Passwords do not match!";
+        } else {
+            matchDiv.textContent = "Passwords match";
+            matchDiv.style.color = "green";
+        }
+    };
+
+    password.addEventListener('input', () => {
+        checkStrength(password.value);
+        checkMatch();
+    });
+
+    confirmPassword.addEventListener('input', checkMatch);
+
+    // Optional: prevent form submission if passwords don't match
+    document.getElementById('addTeacherForm').addEventListener('submit', (e) => {
+        if(password.value !== confirmPassword.value){
+            e.preventDefault();
+            alert("Passwords do not match!");
+        }
+    });
+});
+</script>
+
+{% endblock %}

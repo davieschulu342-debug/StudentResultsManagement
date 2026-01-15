@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+    <div class="card shadow-lg p-4" style="max-width: 800px; width: 100%; border-radius: 1rem;">
+
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <h3 class="fw-bold text-primary">Add Results</h3>
+            <p class="text-muted small">Fill in the details to proceed with entering student marks</p>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} text-center">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+
+        <!-- Form Start -->
+        <form method="post" id="addResultsForm" novalidate>
+            {% csrf_token %}
+            <div class="row g-3">
+
+                <!-- Class -->
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Class</label>
+                    <select name="class" class="form-select form-select-lg" required>
+                        <option value="">--Select Class--</option>
+                        {% for cls in classes %}
+                        <option value="{{ cls.id }}">{{ cls.class_name }} {{ cls.numeric_name }} {{ cls.section }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <div class="invalid-feedback">Please select a class.</div>
+                </div>
+
+                <!-- Subject -->
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Subject</label>
+                    <select name="subject" class="form-select form-select-lg" required>
+                        <option value="">--Select Subject--</option>
+                        {% for sub in subjects %}
+                        <option value="{{ sub.id }}">
+                            {{ sub.subject_name }}{% if sub.subject_code %} - {{ sub.subject_code }}{% endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <div class="invalid-feedback">Please select a subject.</div>
+                </div>
+
+                <!-- Test Type -->
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Test Type</label>
+                    <select name="test_type" class="form-select form-select-lg" required>
+                        <option value="">--Select Test--</option>
+                        <option value="TEST1">Test 1</option>
+                        <option value="TEST2">Test 2</option>
+                        <option value="EOT">End of Term</option>
+                    </select>
+                    <div class="invalid-feedback">Please select a test type.</div>
+                </div>
+
+                <!-- Term -->
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Term</label>
+                    <select name="term" class="form-select form-select-lg" required>
+                        <option value="">--Select Term--</option>
+                        <option value="TERM1">Term 1</option>
+                        <option value="TERM2">Term 2</option>
+                        <option value="TERM3">Term 3</option>
+                    </select>
+                    <div class="invalid-feedback">Please select a term.</div>
+                </div>
+
+                <!-- Year -->
+<div class="col-md-6">
+    <label class="form-label fw-semibold">Year</label>
+    <select name="year" class="form-select" required>
+        <option value="">--Select Year--</option>
+        {% for year_option in years %}
+        <option value="{{ year_option }}" {% if current_year == year_option %}selected{% endif %}>
+            {{ year_option }}
+        </option>
+        {% endfor %}
+    </select>
+    <div class="invalid-feedback">Please select a year.</div>
+</div>
+
+
+                <!-- Submit Button -->
+                <div class="d-grid mt-4">
+                    <button type="submit" name="proceed" class="btn btn-primary btn-lg shadow-sm">
+                        <i class="fas fa-arrow-right me-2"></i>Proceed to Enter Marks
+                    </button>
+                </div>
+        </form>
+        <!-- Form End -->
+
+    </div>
+</div>
+
+<!-- jQuery AJAX for dynamic subjects -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        // AJAX for subjects
+        $('select[name="class"]').change(function () {
+            var classId = $(this).val();
+            var subjectSelect = $('select[name="subject"]');
+
+            subjectSelect.html('<option value="">Loading subjects...</option>');
+
+            if (classId) {
+                $.ajax({
+                    url: "{% url 'get_subjects_by_class' %}",
+                    data: { 'class_id': classId },
+                    dataType: 'json',
+                    success: function (data) {
+                        subjectSelect.empty();
+                        subjectSelect.append('<option value="">--Select Subject--</option>');
+
+                        if (data.subjects.length > 0) {
+                            $.each(data.subjects, function (index, subject) {
+                                var name = subject.name || '';
+                                var code = subject.code ? ' - ' + subject.code : '';
+                                subjectSelect.append('<option value="' + subject.id + '">' + name + code + '</option>');
+                            });
+                        } else {
+                            subjectSelect.append('<option value="">No subjects found</option>');
+                        }
+                    },
+                    error: function () {
+                        subjectSelect.html('<option value="">Error loading subjects</option>');
+                    }
+                });
+            } else {
+                subjectSelect.html('<option value="">--Select Subject--</option>');
+            }
+        });
+
+        // FORM VALIDATION: highlight missing fields
+        $('#addResultsForm').on('submit', function (e) {
+            var valid = true;
+
+            $(this).find('select, input').each(function () {
+                if ($(this).prop('required') && !$(this).val()) {
+                    valid = false;
+                    $(this).addClass('is-invalid');  // Bootstrap red border
+                } else {
+                    $(this).removeClass('is-invalid');
+                }
+            });
+
+            if (!valid) {
+                e.preventDefault();  // prevent submission
+                // Optionally scroll to first invalid field
+                $('html, body').animate({
+                    scrollTop: $('.is-invalid').first().offset().top - 100
+                }, 400);
+            }
+        });
+    });
+</script>
+
+{% endblock %}

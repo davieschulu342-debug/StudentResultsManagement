@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm px-4">
+  <a class="navbar-brand fw-bold" href="{% url 'teacher_dashboard' %}">
+    <i class="fas fa-chalkboard-teacher me-2"></i> Teacher Portal
+  </a>
+
+  <div class="ms-auto d-flex align-items-center">
+    <span class="text-white me-3">
+      <i class="fas fa-user-circle me-1"></i> {{ request.user.username }}
+    </span>
+    <a href="{% url 'teacher_logout' %}" class="btn btn-outline-light btn-sm">
+      <i class="fas fa-sign-out-alt"></i>
+    </a>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- SIDEBAR -->
+    <aside class="col-md-2 sidebar bg-white shadow-sm">
+      <ul class="nav flex-column pt-4">
+
+        <!-- CLASSES -->
+        <li class="nav-item">
+          <a class="nav-link fw-semibold" data-bs-toggle="collapse" href="#classesMenu">
+            <i class="fas fa-school text-primary me-2"></i> Classes
+          </a>
+          <div class="collapse" id="classesMenu">
+            <ul class="nav flex-column ms-3">
+              <li><a class="nav-link small" href="{% url 'create_class' %}">Add Class</a></li>
+              <li><a class="nav-link small" href="{% url 'manage_classes' %}">Manage Classes</a></li>
+              <li><a class="nav-link small" href="#">Class Lists</a></li>
+            </ul>
+          </div>
+        </li>
+
+        <!-- SUBJECTS -->
+        <li class="nav-item mt-2">
+          <a class="nav-link fw-semibold" data-bs-toggle="collapse" href="#subjectsMenu">
+            <i class="fas fa-book text-success me-2"></i> Subjects
+          </a>
+          <div class="collapse" id="subjectsMenu">
+            <ul class="nav flex-column ms-3">
+              <li><a class="nav-link small" href="{% url 'create_subject' %}">Add Subject</a></li>
+              <li><a class="nav-link small" href="{% url 'manage_subjects' %}">Manage Subjects</a></li>
+              <li><a class="nav-link small" href="{% url 'add_subject_combination' %}">Add Combination</a></li>
+              <li><a class="nav-link small" href="{% url 'manage_subject_combination' %}">Manage Combinations</a></li>
+            </ul>
+          </div>
+        </li>
+
+        <!-- RESULTS -->
+        <li class="nav-item mt-2">
+          <a class="nav-link fw-semibold" data-bs-toggle="collapse" href="#resultsMenu">
+            <i class="fas fa-clipboard-list text-warning me-2"></i> Results
+          </a>
+          <div class="collapse" id="resultsMenu">
+            <ul class="nav flex-column ms-3">
+              <li><a class="nav-link small" href="{% url 'add_result' %}">Add Results</a></li>
+              <li><a class="nav-link small" href="{% url 'manage_results' cls_id %}">Manage Results</a></li>
+            </ul>
+          </div>
+        </li>
+
+        <!-- DOWNLOADS -->
+        <li class="nav-item mt-2">
+          <a class="nav-link fw-semibold" data-bs-toggle="collapse" href="#downloadsMenu">
+            <i class="fas fa-download text-info me-2"></i> Downloads
+          </a>
+          <div class="collapse" id="downloadsMenu">
+            <ul class="nav flex-column ms-3">
+              <li><a class="nav-link small" href="#">Class Lists</a></li>
+              <li><a class="nav-link small" href="#">Results Analysis</a></li>
+              <li><a class="nav-link small" href="#">Mark Schedule</a></li>
+            </ul>
+          </div>
+        </li>
+
+        <li class="nav-item mt-4">
+          <a class="nav-link text-danger fw-semibold" href="{% url 'teacher_password_reset' %}">
+            <i class="fas fa-key me-2"></i> Change Password
+          </a>
+        </li>
+
+      </ul>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="col-md-10 offset-md-2 px-4 py-4">
+
+      <!-- HEADER -->
+      <div class="mb-4">
+        <h3 class="fw-bold text-primary">Welcome, {{ teacher.teacher_name }}</h3>
+        <p class="text-muted mb-0">Department: {{ teacher.department }}</p>
+      </div>
+
+      <!-- STAT CARDS -->
+      <div class="row g-4 mb-5">
+        <div class="col-md-4">
+          <div class="card stat-card bg-primary text-white shadow">
+            <div class="card-body d-flex justify-content-between align-items-center">
+              <div>
+                <h4>{{ classes_count }}</h4>
+                <p class="mb-0">Classes Assigned</p>
+              </div>
+              <i class="fas fa-school fa-2x"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card stat-card bg-success text-white shadow">
+            <div class="card-body d-flex justify-content-between align-items-center">
+              <div>
+                <h4>{{ students_count }}</h4>
+                <p class="mb-0">Total Students</p>
+              </div>
+              <i class="fas fa-user-graduate fa-2x"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card stat-card bg-warning text-dark shadow">
+            <div class="card-body d-flex justify-content-between align-items-center">
+              <div>
+                <h4>{{ subjects_count }}</h4>
+                <p class="mb-0">Subjects Handled</p>
+              </div>
+              <i class="fas fa-book fa-2x"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLES -->
+      <div class="row g-4">
+        <!-- CLASSES TABLE -->
+        <div class="col-md-6">
+          <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">Assigned Classes</div>
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>Class</th>
+                  <th>Section</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for cls in classes %}
+                <tr>
+                  <td>{{ cls.class_name }} {{ cls.numeric_name }}</td>
+                  <td>{{ cls.section }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="2" class="text-center text-muted">No classes</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SUBJECTS TABLE -->
+        <div class="col-md-6">
+          <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">Assigned Subjects</div>
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>Subject Name</th>
+                  <th>Code</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for subject in teacher.department.subject_set.all %}
+                <tr>
+                  <td>{{ subject.subject_name }}</td>
+                  <td>{{ subject.subject_code }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="2" class="text-center text-muted">No subjects</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<style>
+  .sidebar {
+    height: calc(100vh - 56px);
+    position: fixed;
+    top: 56px;
+    left: 0;
+    width: 16.666%;
+    overflow-y: auto;
+  }
+
+  .stat-card {
+    border-radius: 12px;
+  }
+</style>
+{% endblock %}
