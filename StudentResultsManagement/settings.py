@@ -10,7 +10,15 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "fallback-secret-key")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 # Allowed hosts
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
+
+
+ALLOWED_HOSTS = [
+    "student-results-management.onrender.com",
+    ".onrender.com",
+    "localhost",
+    "127.0.0.1",
+]
+
 
 # Installed apps
 INSTALLED_APPS = [
@@ -83,3 +91,8 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default auto field
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://student-results-management.onrender.com",
+]
+
