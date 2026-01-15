@@ -7,14 +7,25 @@ services:
       pip install -r requirements.txt
       python manage.py migrate
       python manage.py collectstatic --noinput
+    startCommand: gunicorn StudentResultsManagement.wsgi:application
     envVars:
-      - key: DJANGO_SETTINGS_MODULE
-        value: StudentResultsManagement.settings
-      - key: DEBUG
-        value: False
       - key: SECRET_KEY
         generateValue: true
+      - key: DEBUG
+        value: False
       - key: ALLOWED_HOSTS
         value: student-results-management.onrender.com
+      - key: DJANGO_SETTINGS_MODULE
+        value: StudentResultsManagement.settings
+      - key: DB_NAME
+        value: <your_db_name>
+      - key: DB_USER
+        value: <your_db_user>
+      - key: DB_PASSWORD
+        value: <your_db_password>
+      - key: DB_HOST
+        value: <your_db_host>
+      - key: DB_PORT
+        value: 5432
       - key: PYTHON_VERSION
         value: 3.11
