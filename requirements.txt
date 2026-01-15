@@ -5,4 +5,6 @@ psycopg2-binary
 django-widget-tweaks
 django-simple-history
 reportlab==4.1.0
+dj-database-url
+psycopg2-binary
 
