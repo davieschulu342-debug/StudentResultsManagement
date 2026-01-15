@@ -5,17 +5,16 @@ services:
     plan: free
     buildCommand: |
       pip install -r requirements.txt
-      python manage.py collectstatic --noinput
       python manage.py migrate
-    startCommand: gunicorn StudentResultsManagement.wsgi:application
+      python manage.py collectstatic --noinput
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: StudentResultsManagement.settings
-      - key: PYTHON_VERSION
-        value: 3.11
       - key: DEBUG
         value: False
       - key: SECRET_KEY
         generateValue: true
       - key: ALLOWED_HOSTS
         value: student-results-management.onrender.com
+      - key: PYTHON_VERSION
+        value: 3.11
