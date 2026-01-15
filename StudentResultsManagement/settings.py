@@ -7,7 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY", "fallback-secret-key")
 
 # Debug mode
-DEBUG = os.environ.get("DEBUG", "False") == "True"
+DEBUG = True
 
 # Allowed hosts
 
