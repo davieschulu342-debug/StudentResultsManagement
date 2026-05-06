@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">Junior Subject Analysis</h2>
+    <table class="table table-bordered table-striped table-hover align-middle text-center">
+        <thead class="table-light">
+            <tr>
+                <th rowspan="2">Subject</th>
+                <th colspan="2">Entrants</th>
+                <th colspan="2">Sat</th>
+                <th colspan="2">Absent</th>
+                <th colspan="4">Passed - Girls</th>
+                <th colspan="4">Passed - Boys</th>
+                <th colspan="2">Failed</th>
+                <th colspan="3">Pass %age</th>
+            </tr>
+            <tr>
+                <th>Girls</th><th>Boys</th>
+                <th>Girls</th><th>Boys</th>
+                <th>Girls</th><th>Boys</th>
+                <th>1</th><th>2</th><th>3</th><th>4</th>
+                <th>1</th><th>2</th><th>3</th><th>4</th>
+                <th>Girls</th><th>Boys</th>
+                <th>Girls</th><th>Boys</th><th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subject, data in analysis.items %}
+            <tr>
+                <td class="fw-bold">{{ subject }}</td>
+
+                <!-- Entrants -->
+                <td>{{ data.entrants.Girls }}</td>
+                <td>{{ data.entrants.Boys }}</td>
+
+                <!-- Sat -->
+                <td>{{ data.sat.Girls }}</td>
+                <td>{{ data.sat.Boys }}</td>
+
+                <!-- Absent -->
+                <td>{{ data.absent.Girls }}</td>
+                <td>{{ data.absent.Boys }}</td>
+
+                <!-- Passed - Girls -->
+                {% for grade in "ONE,TWO,THREE,FOUR".split(',') %}
+                    <td>
+                        {% if data.passed.Girls[grade] > 0 %}
+                            <span class="badge bg-success">{{ data.passed.Girls[grade] }}</span>
+                        {% else %}
+                            <span class="text-muted">0</span>
+                        {% endif %}
+                    </td>
+                {% endfor %}
+
+                <!-- Passed - Boys -->
+                {% for grade in "ONE,TWO,THREE,FOUR".split(',') %}
+                    <td>
+                        {% if data.passed.Boys[grade] > 0 %}
+                            <span class="badge bg-success">{{ data.passed.Boys[grade] }}</span>
+                        {% else %}
+                            <span class="text-muted">0</span>
+                        {% endif %}
+                    </td>
+                {% endfor %}
+
+                <!-- Failed -->
+                <td>
+                    {% if data.failed.Girls > 0 %}
+                        <span class="badge bg-danger">{{ data.failed.Girls }}</span>
+                    {% else %}
+                        0
+                    {% endif %}
+                </td>
+                <td>
+                    {% if data.failed.Boys > 0 %}
+                        <span class="badge bg-danger">{{ data.failed.Boys }}</span>
+                    {% else %}
+                        0
+                    {% endif %}
+                </td>
+
+                <!-- Pass Percentage -->
+                {% for key in "Girls,Boys,Total".split(',') %}
+                    {% with pct=data.pass_percentage[key] %}
+                        {% if pct >= 75 %}
+                            <td class="text-success fw-bold">{{ pct|floatformat:2 }}</td>
+                        {% elif pct >= 50 %}
+                            <td class="text-warning fw-bold">{{ pct|floatformat:2 }}</td>
+                        {% else %}
+                            <td class="text-danger fw-bold">{{ pct|floatformat:2 }}</td>
+                        {% endif %}
+                    {% endwith %}
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

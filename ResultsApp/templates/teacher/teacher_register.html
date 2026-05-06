@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+<style>
+    body { background:#f0f2f5; font-family:'Segoe UI', sans-serif; }
+    .register-container {
+        max-width:950px;
+        margin:50px auto;
+        background:#fff;
+        border-radius:12px;
+        padding:40px;
+        box-shadow:0 8px 20px rgba(0,0,0,0.1);
+    }
+    h2 { text-align:center; margin-bottom:30px; color:#0d6efd; }
+    label { font-weight:600; margin-bottom:5px; display:block; }
+
+    .form-control, .form-select {
+        border:none;
+        border-radius:8px;
+        padding:12px;
+        background: linear-gradient(90deg, #e0f7fa, #fff9c4);
+        transition: all 0.3s ease;
+        box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+    }
+    .form-control:focus, .form-select:focus {
+        outline:none;
+        background: linear-gradient(90deg, #b2ebf2, #fff59d);
+        box-shadow: 0 0 8px rgba(13,110,253,0.3);
+    }
+
+    .row { margin-bottom:15px; }
+
+    .photo-preview {
+        width:120px;
+        height:150px;
+        object-fit:cover;
+        border-radius:8px;
+        display:none;
+        margin-top:10px;
+        box-shadow:0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    #password-strength {
+        height:8px;
+        width:0;
+        border-radius:4px;
+        margin-top:5px;
+        transition:width 0.3s ease;
+    }
+    #password-match { margin-top:5px; font-size:0.9em; color:red; }
+
+    button {
+        background:#0d6efd;
+        color:white;
+        border:none;
+        padding:14px;
+        width:100%;
+        border-radius:8px;
+        font-size:1.1em;
+        cursor:pointer;
+        transition:background 0.3s;
+    }
+    button:hover { background:#0056b3; }
+</style>
+
+<div class="register-container">
+    <h2>Teacher Registration</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} text-center">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="row">
+            <!-- LEFT COLUMN -->
+            <div class="col-md-6">
+
+                <label>{{ form.teacher_name.label }}</label>
+                {{ form.teacher_name|add_class:"form-control" }}
+
+                <label>{{ form.gender.label }}</label>
+                {{ form.gender|add_class:"form-select" }}
+
+                <label>{{ form.marital_status.label }}</label>
+                {{ form.marital_status|add_class:"form-select" }}
+
+                <label>{{ form.phone_no.label }}</label>
+                {{ form.phone_no|add_class:"form-control" }}
+
+                <label>{{ form.department1.label }}</label>
+                {{ form.department1|add_class:"form-select" }}
+
+                <label>{{ form.department2.label }}</label>
+                {{ form.department2|add_class:"form-select" }}
+
+                <label>{{ form.academic.label }}</label>
+                {{ form.academic|add_class:"form-control" }}
+
+                <label>{{ form.qualification.label }}</label>
+                {{ form.qualification|add_class:"form-control" }}
+            </div>
+
+            <!-- RIGHT COLUMN -->
+            <div class="col-md-6">
+
+                <!-- PASSPORT PHOTO -->
+                <label>{{ form.photo.label }}</label>
+                {{ form.photo|add_class:"form-control" }}
+                <small class="text-muted">Passport size • JPG/PNG</small>
+                <img id="photoPreview" class="photo-preview">
+
+                <label>{{ form.professional_qualification.label }}</label>
+                {{ form.professional_qualification|add_class:"form-control" }}
+
+                <label>{{ form.major.label }}</label>
+                {{ form.major|add_class:"form-control" }}
+
+                <label>{{ form.minor.label }}</label>
+                {{ form.minor|add_class:"form-control" }}
+
+                <label>{{ form.date_first_app.label }}</label>
+                {{ form.date_first_app|add_class:"form-control" }}
+
+                <label>{{ form.date_current_app.label }}</label>
+                {{ form.date_current_app|add_class:"form-control" }}
+
+                <label>{{ form.date_of_retirement.label }}</label>
+                {{ form.date_of_retirement|add_class:"form-control" }}
+
+                <label>{{ form.NRC_No.label }}</label>
+                {{ form.NRC_No|add_class:"form-control" }}
+
+                <label>{{ form.TCZ_No.label }}</label>
+                {{ form.TCZ_No|add_class:"form-control" }}
+
+                <label>{{ form.TS_No.label }}</label>
+                {{ form.TS_No|add_class:"form-control" }}
+
+                <label>{{ form.Employ_No.label }}</label>
+                {{ form.Employ_No|add_class:"form-control" }}
+
+                <label>{{ form.disability.label }}</label>
+                {{ form.disability|add_class:"form-control" }}
+            </div>
+        </div>
+
+        <!-- PASSWORDS -->
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <label>{{ form.password.label }}</label>
+                {{ form.password|add_class:"form-control" }}
+                <div id="password-strength"></div>
+            </div>
+            <div class="col-md-6">
+                <label>{{ form.confirm_password.label }}</label>
+                {{ form.confirm_password|add_class:"form-control" }}
+                <div id="password-match"></div>
+            </div>
+        </div>
+
+        <button type="submit" class="mt-4">Register Teacher</button>
+    </form>
+</div>
+
+<script>
+/* PASSWORD CHECK */
+const password = document.getElementById('id_password');
+const confirmPw = document.getElementById('id_confirm_password');
+const strengthBar = document.getElementById('password-strength');
+const matchMsg = document.getElementById('password-match');
+
+function checkStrength(pw) {
+    let strength = 0;
+    if (pw.length >= 6) strength++;
+    if (/[A-Z]/.test(pw)) strength++;
+    if (/[0-9]/.test(pw)) strength++;
+    if (/[\W]/.test(pw)) strength++;
+
+    const colors = ['red','orange','yellowgreen','green'];
+    strengthBar.style.background = colors[strength-1] || 'red';
+    strengthBar.style.width = (strength * 50) + 'px';
+}
+
+password.addEventListener('input', () => {
+    checkStrength(password.value);
+    matchMsg.textContent = password.value === confirmPw.value ? "Passwords match" : "Passwords do not match";
+    matchMsg.style.color = password.value === confirmPw.value ? "green" : "red";
+});
+
+confirmPw.addEventListener('input', () => {
+    matchMsg.textContent = password.value === confirmPw.value ? "Passwords match" : "Passwords do not match";
+    matchMsg.style.color = password.value === confirmPw.value ? "green" : "red";
+});
+
+/* PHOTO PREVIEW */
+const photoInput = document.getElementById('id_passport_photo');
+const photoPreview = document.getElementById('photoPreview');
+
+photoInput.addEventListener('change', () => {
+    const file = photoInput.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            photoPreview.src = e.target.result;
+            photoPreview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+{% endblock %}

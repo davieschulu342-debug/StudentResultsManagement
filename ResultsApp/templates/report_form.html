@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load grades %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header -->
+    <h3 class="text-center mb-4">
+        <i class="fas fa-file-alt me-2"></i>
+        Report Form: {{ cls.class_name }} - {{ grading_system }}
+    </h3>
+
+    <!-- Class Info -->
+    <div class="mb-3">
+        <strong>Section:</strong> {{ cls.section }} |
+        <strong>Intake:</strong> {{ cls.session }} |
+        <strong>Academic Year:</strong> {{ cls.year }}
+    </div>
+
+    <!-- PDF Button -->
+    <div class="mb-3 d-flex justify-content-end">
+        <a href="{% url 'report_form_pdf' cls.id %}" target="_blank" class="btn btn-success">
+            <i class="fas fa-file-pdf me-1"></i> Generate PDF
+        </a>
+    </div>
+
+    <!-- Report Table -->
+    <table class="table table-bordered table-striped table-hover">
+        <thead class="table-dark text-center">
+            <tr>
+                <th>#</th>
+                <th>Student Name</th>
+                <th>Subject</th>
+                <th>Score</th>
+                <th>Grade</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+                {% for result in student.results.all %}
+                    <tr>
+                        {% if forloop.first %}
+                            <td rowspan="{{ student.results.count }}" class="text-center">{{ forloop.parentloop.counter }}</td>
+                            <td rowspan="{{ student.results.count }}">{{ student }}</td>
+                        {% endif %}
+                        <td>{{ result.subject.subject_name }}</td>
+                        <td class="text-center">{{ result.marks }}</td>
+                        <td class="text-center">
+                            {% if grading_system == "Grade 12" %}
+                                {{ result.marks|grade12 }}
+
+                            {% elif grading_system == "Grade 9" %}
+                                {{ result.marks|grade9 }}
+                            {% else %}
+                                {{ result.marks|grade7 }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">No results available for {{ student.student_name }}</td>
+                    </tr>
+                {% endfor %}
+            {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No students found in this class.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Print Button -->
+    <div class="mt-4 text-center">
+        <button onclick="window.print()" class="btn btn-success">
+            <i class="fas fa-print"></i> Print Report
+        </button>
+    </div>
+</div>
+
+<!-- Print Styles -->
+<style>
+    @media print {
+        .btn {
+            display: none;
+        }
+        table {
+            page-break-inside: auto;
+        }
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,56 @@
+/* Section cards */
+.section-card {
+    background: linear-gradient(145deg, #ffffff, #f2f6ff);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+}
+
+/* Section title */
+.section-title {
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+/* Custom inputs */
+.custom-input {
+    height: 52px;
+    border-radius: 12px;
+    border: 1px solid #dfe6f1;
+    font-size: 0.95rem;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.custom-input:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.15rem rgba(78, 115, 223, 0.25);
+}
+
+/* Readonly intake year */
+.readonly-input {
+    background: #eef3ff;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* Proceed button */
+.proceed-btn {
+    background: linear-gradient(135deg, #4e73df, #224abe);
+    color: #fff;
+    border: none;
+    padding: 14px 42px;
+    font-size: 1.05rem;
+    border-radius: 30px;
+    box-shadow: 0 12px 30px rgba(78,115,223,0.4);
+    transition: all 0.3s ease;
+}
+
+.proceed-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px rgba(78,115,223,0.55);
+}

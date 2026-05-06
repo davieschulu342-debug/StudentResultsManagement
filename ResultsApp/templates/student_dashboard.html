@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-5">
+
+    <h3 class="text-center mb-4">Student Dashboard</h3>
+
+    <div class="card p-4 shadow-sm">
+
+        <div class="text-center mb-3">
+            <h5>Welcome Student</h5>
+            <p><strong>Exam Number:</strong> {{ exam_no }}</p>
+        </div>
+
+        <hr>
+
+        <form method="POST" action="{% url 'generate_student_report' %}">
+            {% csrf_token %}
+
+            <!-- CLASS (AUTO ASSIGNED) -->
+            <div class="mb-3">
+                <label>Class</label>
+                <input type="text" class="form-control"
+                       value="{{ student_class }}" readonly>
+
+                <input type="hidden" name="class_id" value="{{ student_class.id }}">
+            </div>
+
+            <!-- TERM -->
+            <div class="mb-3">
+                <label>Term</label>
+                <select name="term" class="form-control" required>
+                    <option value="">-- Select Term --</option>
+                    {% for value, label in term_choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- TEST TYPE -->
+            <div class="mb-3">
+                <label>Test Type</label>
+                <select name="test_type" class="form-control" required>
+                    <option value="">-- Select Test Type --</option>
+                    {% for value, label in test_choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- YEAR -->
+            <div class="mb-3">
+                <label>Academic Year</label>
+                <input type="number" name="year" class="form-control" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+                Generate Report Form
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

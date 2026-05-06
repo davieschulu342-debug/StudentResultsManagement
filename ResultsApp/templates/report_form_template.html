@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Report Form</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; margin: 20px; }
+        h2, h3 { text-align: center; margin-bottom: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid black; padding: 5px; text-align: center; }
+        th { background-color: #f2f2f2; }
+        .info { margin-bottom: 10px; }
+        .comments { margin-top: 20px; }
+        .page-break { page-break-after: always; }
+    </style>
+</head>
+<body>
+    <h2>Report Form</h2>
+    <h3>{{ cls.class_name }} {{ cls.numeric_name }} {{ cls.section }} | Level: {{ cls.level }}</h3>
+
+    <div class="info">
+        <p><strong>Student:</strong> {{ student.first_name }} {{ student.last_name }} | <strong>Exam No:</strong> {{ student.exam_no }}</p>
+        <p><strong>Term:</strong> {{ term }} | <strong>Test Type:</strong> {{ test_type }} | <strong>Year:</strong> {{ student.student_class.year }}</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Subject</th>
+                <th>Mark</th>
+                <th>Grade</th>
+                <th>Comment</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in results %}
+            <tr>
+                <td>{{ r.subject }}</td>
+                <td>{{ r.mark }}</td>
+                <td>{{ r.grade }}</td>
+                <td>{{ r.comment }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="comments">
+        <p><strong>Class Teacher Comment:</strong> ____________________________________________</p>
+        <p><strong>Headteacher Comment:</strong> ____________________________________________</p>
+    </div>
+</body>
+</html>

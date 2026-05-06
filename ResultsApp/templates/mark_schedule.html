@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block top_bar %}{% endblock %}
+{% block main_navbar %}{% endblock %}
+
+{% block content %}
+
+<!-- ================= FILTER FORM ================= -->
+<form method="get" class="card card-body mb-3">
+    <div class="row g-3">
+
+        <!-- CLASS -->
+        <div class="col-md-3">
+            <label class="form-label">Class</label>
+            <select name="class" class="form-select" required onchange="this.form.submit()">
+                <option value="">Select Class</option>
+                {% for c in classes %}
+                <option value="{{ c.id }}"
+                    {% if selected_class and selected_class.id == c.id %}selected{% endif %}>
+                    {{ c.class_name }} {{ c.numeric_name }} {{ c.section }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- TERM -->
+        <div class="col-md-3">
+            <label class="form-label">Term</label>
+            <select name="term" class="form-select" required>
+                <option value="">Select Term</option>
+                <option value="TERM1" {% if selected_term == "TERM1" %}selected{% endif %}>Term 1</option>
+                <option value="TERM2" {% if selected_term == "TERM2" %}selected{% endif %}>Term 2</option>
+                <option value="TERM3" {% if selected_term == "TERM3" %}selected{% endif %}>Term 3</option>
+            </select>
+        </div>
+
+        <!-- TEST TYPE -->
+        <div class="col-md-3">
+            <label class="form-label">Test Type</label>
+            <select name="test_type" class="form-select">
+                <option value="ALL" {% if selected_test_type == "ALL" %}selected{% endif %}>
+                    All Test Types
+                </option>
+                <option value="TEST1" {% if selected_test_type == "TEST1" %}selected{% endif %}>
+                    Test 1
+                </option>
+                <option value="TEST2" {% if selected_test_type == "TEST2" %}selected{% endif %}>
+                    Test 2
+                </option>
+                <option value="EOT" {% if selected_test_type == "EOT" %}selected{% endif %}>
+                    End of Term
+                </option>
+            </select>
+        </div>
+
+        <!-- SUBJECTS -->
+        <div class="col-md-12">
+            <label class="form-label">Subjects</label>
+
+            {% if selected_class %}
+                {% if all_subjects %}
+                    <div class="d-flex flex-wrap gap-2 border rounded p-2"
+                         style="max-height: 200px; overflow-y: auto;">
+                        {% for sc in all_subjects %}
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   name="subjects"
+                                   value="{{ sc.subject.id }}"
+                                   id="subject_{{ sc.subject.id }}"
+                                   {% if sc.subject.id|stringformat:"s" in selected_subjects %}checked{% endif %}>
+                            <label class="form-check-label"
+                                   for="subject_{{ sc.subject.id }}">
+                                {{ sc.subject.subject_name }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <small class="text-muted">
+                        Select subjects to filter the mark schedule.
+                    </small>
+                {% else %}
+                    <p class="text-muted mb-0">
+                        No subjects assigned to this class.
+                    </p>
+                {% endif %}
+            {% else %}
+                <p class="text-muted mb-0">
+                    Select a class to load subjects.
+                </p>
+            {% endif %}
+        </div>
+
+        <!-- SUBMIT -->
+        <div class="col-md-3 d-flex align-items-end">
+            <button class="btn btn-primary w-100">
+                View Mark Schedule
+            </button>
+        </div>
+
+    </div>
+
+    {% if selected_class %}
+    <hr>
+    <p class="mb-0">
+        <strong>Session:</strong> {{ selected_class.session }} |
+        <strong>Academic Year:</strong> {{ selected_class.year }}
+    </p>
+    {% endif %}
+</form>
+
+<!-- ================= MARK SCHEDULE ================= -->
+<div class="container mt-4">
+    <h3 class="text-primary mb-3">Mark Schedule</h3>
+
+    {% if selected_class and selected_term %}
+    <div class="mb-3">
+        <a href="{% url 'download_mark_schedule_pdf' %}?class={{ selected_class.id }}&term={{ selected_term }}&test_type={{ selected_test_type }}{% for s in selected_subjects %}&subjects={{ s }}{% endfor %}"
+           class="btn btn-success">
+            Download PDF
+        </a>
+
+        <a href="{% url 'download_mark_schedule_excel' %}?class={{ selected_class.id }}&term={{ selected_term }}&test_type={{ selected_test_type }}{% for s in selected_subjects %}&subjects={{ s }}{% endfor %}"
+           class="btn btn-primary">
+            Download Excel
+        </a>
+
+        <a href="{% url 'download_term_mark_schedule_pdf' %}?class={{ selected_class.id }}&term={{ selected_term }}"
+           class="btn btn-success">
+            Download Full Term (PDF)
+        </a>
+
+        <button onclick="window.print()" class="btn btn-secondary">
+            Print
+        </button>
+    </div>
+    {% endif %}
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="table-primary">
+                <tr>
+                    <th rowspan="2">S/No</th>
+                    <th rowspan="2">Exam No</th>
+                    <th rowspan="2">Student Name</th>
+                    <th rowspan="2">Gender</th>
+
+                    {% for sc in subjects %}
+                        {% if selected_test_type == "ALL" %}
+                            <th colspan="3">{{ sc.subject.subject_name }}</th>
+                        {% else %}
+                            <th>{{ sc.subject.subject_name }}</th>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+
+                {% if selected_test_type == "ALL" %}
+                <tr>
+                    {% for sc in subjects %}
+                    <th>Test 1</th>
+                    <th>Test 2</th>
+                    <th>End of Term</th>
+                    {% endfor %}
+                </tr>
+                {% endif %}
+            </thead>
+
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ student.exam_no }}</td>
+                    <td>{{ student.first_name }} {{ student.last_name }}</td>
+                    <td>{{ student.gender }}</td>
+
+                    {% for sc in subjects %}
+                        {% if selected_test_type == "ALL" %}
+                            <td>{{ marks_dict|get:student.id|get:sc.subject.id|get:"TEST1"|default:"-" }}</td>
+                            <td>{{ marks_dict|get:student.id|get:sc.subject.id|get:"TEST2"|default:"-" }}</td>
+                            <td>{{ marks_dict|get:student.id|get:sc.subject.id|get:"EOT"|default:"-" }}</td>
+                        {% else %}
+                            <td>{{ marks_dict|get:student.id|get:sc.subject.id|get:selected_test_type|default:"-" }}</td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="100%" class="text-center text-muted">
+                        No students found
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

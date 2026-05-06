@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- ================= HERO ================= -->
+<section class="hero-section text-white text-center position-relative"
+    style="min-height:75vh; background:url('/static/images/hero-bg.jpg') center/cover no-repeat;">
+
+    <div class="position-absolute top-0 start-0 w-100 h-100" style="background:rgba(0,0,0,0.45);"></div>
+
+    <div class="container position-relative d-flex flex-column justify-content-center align-items-center h-100">
+
+        <h1 class="fw-bold mb-3">
+            Smarter School Management<br>
+            <span class="text-primary">All in One Platform</span>
+        </h1>
+
+        <p class="mb-4">
+            Manage students, teachers, results, attendance, and communication — smarter and faster.
+        </p>
+
+        <div>
+            <a href="{% url 'teacher_register' %}" class="btn btn-primary btn-lg me-2">
+                Get Started Free
+            </a>
+
+            <a href="{% url 'teacher_login' %}" class="btn btn-outline-light btn-lg">
+                Login
+            </a>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- ================= IMPORTANT NOTICES ================= -->
+<section id="notices" class="py-5" style="background:#f8f9fa;">
+    <div class="container">
+
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">
+                <i class="fas fa-bullhorn text-primary me-2"></i>
+                Important Notices
+            </h2>
+            <p class="text-muted">Stay updated with the latest announcements</p>
+        </div>
+
+        {% if notices %}
+
+        <!-- Featured Notice -->
+        <div class="mb-4">
+            {% with notice=notices.0 %}
+            <div class="p-4 rounded-4 shadow-sm bg-primary text-white position-relative">
+
+                {% if notice.image %}
+                <img src="{{ notice.image.url }}" class="position-absolute top-0 end-0 h-100 opacity-25"
+                    style="object-fit:cover;">
+                {% endif %}
+
+                <h4 class="fw-bold">{{ notice.title }}</h4>
+                <p class="mb-2">{{ notice.details|truncatewords:40 }}</p>
+
+                <div>
+                    {% if notice.link %}
+                    <a href="{{ notice.link }}" target="_blank" class="btn btn-light btn-sm me-2">Read More</a>
+                    {% endif %}
+
+                    {% if notice.attachment %}
+                    <a href="{{ notice.attachment.url }}" class="btn btn-outline-light btn-sm">Download</a>
+                    {% endif %}
+                </div>
+
+                <small class="text-white-50">
+                    {{ notice.posting_date|date:"M d, Y" }}
+                </small>
+
+            </div>
+            {% endwith %}
+        </div>
+
+        <!-- Grid Notices -->
+        <div class="row g-4">
+            {% for notice in notices|slice:"1:" %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4">
+
+                    {% if notice.image %}
+                    <img src="{{ notice.image.url }}" class="card-img-top rounded-top-4">
+                    {% endif %}
+
+                    <div class="card-body">
+                        <h5 class="fw-bold">{{ notice.title }}</h5>
+                        <p class="text-truncate">{{ notice.details|truncatewords:25 }}</p>
+                    </div>
+
+                    <div class="card-footer bg-white d-flex justify-content-between">
+                        <small class="text-muted">{{ notice.posting_date|date:"M d, Y" }}</small>
+
+                        {% if notice.link %}
+                        <a href="{{ notice.link }}" class="btn btn-sm btn-primary">Read</a>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <p class="text-center text-muted">No notices at the moment.</p>
+        {% endif %}
+
+    </div>
+</section>
+
+
+<!-- ================= FEATURES ================= -->
+<section class="py-5 bg-white">
+    <div class="container text-center">
+
+        <h2 class="fw-bold">Powerful Features</h2>
+        <p class="text-muted mb-5">Everything you need to run a modern school</p>
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <i class="fas fa-users-cog fa-2x text-primary"></i>
+                <h5 class="mt-3">Role-Based Access</h5>
+                <p class="small text-muted">Admins, Teachers, Students & Parents</p>
+            </div>
+
+            <div class="col-md-4">
+                <i class="fas fa-book-open fa-2x text-success"></i>
+                <h5 class="mt-3">Academic Management</h5>
+                <p class="small text-muted">Subjects, results & report cards</p>
+            </div>
+
+            <div class="col-md-4">
+                <i class="fas fa-chart-line fa-2x text-warning"></i>
+                <h5 class="mt-3">Reports & Analytics</h5>
+                <p class="small text-muted">Instant insights & PDF exports</p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- ================= PORTALS ================= -->
+<section class="py-5 bg-light">
+    <div class="container text-center">
+
+        <h2 class="fw-bold">Resources & Portals</h2>
+        <p class="text-muted mb-5">Access learning materials and login portals</p>
+
+        <div class="row g-4">
+
+            <!-- Learning Materials -->
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <i class="fas fa-book fa-2x text-primary mb-3"></i>
+                        <h6 class="fw-bold">Learning Materials</h6>
+                        <p class="small text-muted">Download ebooks and modules</p>
+                        <a href="{% url 'materials_selection' %}" class="btn btn-sm btn-primary">
+                            Download
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STUDENT PORTAL (EXAM NO LOGIN) -->
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+
+                        <i class="fas fa-user-graduate fa-2x text-danger mb-3"></i>
+
+                        <h6 class="fw-bold">Student Portal</h6>
+
+                        <p class="small text-muted">
+                            Login using <strong>Exam Number</strong> then generate your report form.
+                        </p>
+
+                        <a href="{% url 'student_login' %}" class="btn btn-sm btn-danger">
+                            Student Login
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teacher Portal -->
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+
+                        <i class="fas fa-chalkboard-teacher fa-2x text-warning mb-3"></i>
+
+                        <h6 class="fw-bold">Teacher Portal</h6>
+
+                        <p class="small text-muted">Manage classes, results and reports</p>
+
+                        <a href="{% url 'teacher_login' %}" class="btn btn-sm btn-warning text-white">
+                            Teacher Login
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+
+<!-- External Monitor -->
+        <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+
+                        <i class="fas fa-chalkboard-teacher fa-2x text-warning mb-3"></i>
+
+                        <h6 class="fw-bold">External Monitor Portal</h6>
+
+                        <p class="small text-muted">View School Enrollment, Staff Returns and other relevant School info </p>
+
+                        <a href="#" class="btn btn-sm btn-warning text-white">
+                            External Monitor Login
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+
+<!-- ================= CTA ================= -->
+<section class="py-5 bg-primary text-white text-center">
+    <div class="container">
+        <h2 class="fw-bold mb-3">Ready to Digitize Your School?</h2>
+        <p class="mb-4">Start using BupeSmart today.</p>
+        <a href="{% url 'add_teacher' %}" class="btn btn-light btn-lg">
+            Get Started Now
+        </a>
+    </div>
+</section>
+
+{% endblock %}

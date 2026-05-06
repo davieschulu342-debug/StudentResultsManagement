@@ -1,0 +1,213 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>Report Form</title>
+
+<style>
+
+/* ✅ PAGE SETUP FOR WEASYPRINT */
+@page {
+    size: A4;
+    margin: 15mm;
+}
+
+/* GENERAL STYLING */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 12px;
+    color: #333;
+    margin: 0;
+    padding: 15px;
+    background-color: #fff;
+}
+
+/* KEEP YOUR STYLES (unchanged) */
+h2 { text-align: center; font-size: 22px; color: #1C2A48; margin: 0 0 5px 0; }
+h3 { text-align: center; font-size: 16px; color: #4B5563; margin: 0 0 15px 0; }
+
+p {
+    text-align: center;
+    margin: 2px 0;
+    font-size: 13px;
+}
+
+/* TABLE STYLING */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+th, td {
+    border: 1px solid #999;
+    padding: 4px 6px;
+    text-align: center;
+    font-size: 11px;
+    line-height: 1.2;
+}
+
+th {
+    background-color: #2E3A59;
+    color: #fff;
+    font-weight: 600;
+}
+
+tr:nth-child(even) {
+    background-color: #f6f6f6;
+}
+
+/* ✅ CRITICAL: PREVENT DATA LOSS */
+tr {
+    page-break-inside: avoid;
+}
+
+/* COMMENTS */
+.comments {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    page-break-inside: avoid;
+}
+
+.comments p {
+    text-align: left;
+}
+
+/* SIGNATURE SECTION */
+.signature-table {
+    page-break-inside: avoid;
+}
+
+/* ✅ SAFE STAMP OVERLAY */
+.stamp-container {
+    position: relative;
+    display: inline-block;
+}
+
+.stamp-container img {
+    height: 110px;
+}
+
+.stamp-date {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 11px;
+    font-weight: bold;
+}
+
+/* FOOTER */
+.footer {
+    text-align: center;
+    font-size: 11px;
+    margin-top: 20px;
+    color: #777;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<table style="margin-bottom: 20px;">
+<tr>
+<td style="width: 15%; text-align: left;">
+    <img src="{% static 'images/logo.png' %}" style="width: 75px;">
+</td>
+
+<td style="width: 70%; text-align: center;">
+    <div style="font-size: 26px; font-weight: 700; color: #1C2A48;">Muyombe Day Secondary School</div>
+    <div style="font-size: 14px; font-style: italic; color: #4B5563;">Education Makes Life Better</div>
+    <div style="font-size: 16px; font-weight: 600;">REPORT FORM</div>
+</td>
+
+<td style="width: 15%; text-align: right;">
+    <img src="{% static 'images/ministry_logo.png' %}" style="width: 75px;">
+</td>
+</tr>
+</table>
+
+<!-- STUDENT INFO -->
+<table style="border: 1px solid #ccc; margin-bottom: 20px; background-color: #f9f9f9;">
+<tr>
+    <td><strong>Student:</strong> {{ student.first_name }} {{ student.last_name }}</td>
+    <td><strong>Exam No:</strong> {{ student.exam_no }}</td>
+</tr>
+<tr>
+    <td><strong>Term:</strong> {{ term }}</td>
+    <td><strong>Assessment Type:</strong> {{ test_type }}</td>
+</tr>
+<tr>
+    <td><strong>Class:</strong> {{ cls.class_name }} {{ cls.numeric_name }} {{ cls.section }}</td>
+    <td><strong>Level:</strong> {{ cls.level }}</td>
+</tr>
+<tr>
+    <td><strong>Intake:</strong> {{ cls.session }}</td>
+    <td><strong>Academic Year:</strong> {{ cls.year }}</td>
+</tr>
+</table>
+
+<hr style="border-top: 1px solid #ccc;">
+
+<!-- RESULTS -->
+<table>
+<thead>
+<tr>
+    <th>Subject</th>
+    <th>Mark</th>
+    <th>Grade</th>
+    <th>Comment</th>
+</tr>
+</thead>
+<tbody>
+{% for r in results %}
+<tr>
+    <td>{{ r.subject }}</td>
+    <td>{{ r.mark }}</td>
+    <td>{{ r.grade }}</td>
+    <td>{{ r.comment }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+<!-- COMMENTS -->
+<div class="comments">
+<p><strong>Class Teacher's Comment:</strong> {{ teacher_comment }}</p>
+<p><strong>Head Teacher's Comment:</strong> {{ head_comment }}</p>
+</div>
+
+<!-- SIGNATURE + STAMP -->
+<table class="signature-table" style="margin-top: 20px; border: none;">
+<tr>
+
+<td style="width: 40%; text-align: center; border: none;">
+    <img src="{{ head_signature }}" style="height: 70px;"><br>
+    Head Teacher's Signature
+</td>
+
+<td style="width: 30%; text-align: center; border: none;">
+    <div class="stamp-container">
+        <img src="{{ head_stamp }}">
+        <div class="stamp-date">{{ report_date }}</div>
+    </div>
+</td>
+
+<td style="width: 30%; border: none;"></td>
+
+</tr>
+</table>
+
+<div class="footer">
+    © 2026 BupeSmart - All rights reserved.
+</div>
+
+</body>
+</html>

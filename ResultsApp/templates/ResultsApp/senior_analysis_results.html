@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- HEADER -->
+    <div class="text-center mb-4">
+        <h3 class="fw-bold">Senior Class Results Analysis</h3>
+        <p class="text-muted">
+            {{ selected_class }} | {{ term }} – {{ test_type }} | {{ year }}
+        </p>
+    </div>
+
+    <!-- DOWNLOAD BUTTON -->
+    <div class="d-flex justify-content-end mb-3">
+        <a 
+    href="{% url 'download_senior_analysis_excel' %}?class_id={{ selected_class.id }}&term={{ term }}&test_type={{ test_type }}{% for sid in subject_ids %}&subject_ids={{ sid }}{% endfor %}"
+    class="btn btn-success"
+>
+    <i class="bi bi-file-earmark-excel"></i> Download Excel
+</a>
+
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped text-center align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th rowspan="3">Subject</th>
+                    <th colspan="2">Entrants</th>
+                    <th colspan="2">Sat</th>
+                    <th colspan="2">Absent</th>
+                    <th colspan="8">Grades (Girls)</th>
+                    <th colspan="8">Grades (Boys)</th>
+                    <th colspan="3">Pass % (1–6)</th>
+                    <th colspan="3">Pass % (1–8)</th>
+                    <th rowspan="3">Total %</th>
+                </tr>
+                <tr>
+                    <th>Girls</th><th>Boys</th>
+                    <th>Girls</th><th>Boys</th>
+                    <th>Girls</th><th>Boys</th>
+
+                    <th>ONE</th><th>TWO</th><th>THREE</th><th>FOUR</th><th>FIVE</th><th>SIX</th><th>SEVEN</th><th>EIGHT</th>
+                    <th>ONE</th><th>TWO</th><th>THREE</th><th>FOUR</th><th>FIVE</th><th>SIX</th><th>SEVEN</th><th>EIGHT</th>
+
+                    <th>Girls</th><th>Boys</th><th>Total</th>
+                    <th>Girls</th><th>Boys</th><th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject_name, subject in data.items %}
+                <tr>
+                    <td class="text-start fw-semibold">{{ subject_name }}</td>
+
+                    <!-- Entrants -->
+                    <td>{{ subject.entrants.Girls }}</td>
+                    <td>{{ subject.entrants.Boys }}</td>
+
+                    <!-- Sat -->
+                    <td>{{ subject.sat.Girls }}</td>
+                    <td>{{ subject.sat.Boys }}</td>
+
+                    <!-- Absent -->
+                    <td>{{ subject.absent.Girls }}</td>
+                    <td>{{ subject.absent.Boys }}</td>
+
+                    <!-- Girls Grades -->
+                    <td>{{ subject.passed.Girls.ONE }}</td>
+                    <td>{{ subject.passed.Girls.TWO }}</td>
+                    <td>{{ subject.passed.Girls.THREE }}</td>
+                    <td>{{ subject.passed.Girls.FOUR }}</td>
+                    <td>{{ subject.passed.Girls.FIVE }}</td>
+                    <td>{{ subject.passed.Girls.SIX }}</td>
+                    <td>{{ subject.passed.Girls.SEVEN }}</td>
+                    <td>{{ subject.passed.Girls.EIGHT }}</td>
+
+                    <!-- Boys Grades -->
+                    <td>{{ subject.passed.Boys.ONE }}</td>
+                    <td>{{ subject.passed.Boys.TWO }}</td>
+                    <td>{{ subject.passed.Boys.THREE }}</td>
+                    <td>{{ subject.passed.Boys.FOUR }}</td>
+                    <td>{{ subject.passed.Boys.FIVE }}</td>
+                    <td>{{ subject.passed.Boys.SIX }}</td>
+                    <td>{{ subject.passed.Boys.SEVEN }}</td>
+                    <td>{{ subject.passed.Boys.EIGHT }}</td>
+
+                    <!-- Pass % (1–6) -->
+                    <td>{{ subject.pass_percentage_1_6.Girls }}%</td>
+                    <td>{{ subject.pass_percentage_1_6.Boys }}%</td>
+                    <td>{{ subject.pass_percentage_1_6.Total }}%</td>
+
+                    <!-- Pass % (1–8) -->
+                    <td>{{ subject.pass_percentage_1_8.Girls }}%</td>
+                    <td>{{ subject.pass_percentage_1_8.Boys }}%</td>
+                    <td>{{ subject.pass_percentage_1_8.Total }}%</td>
+
+                    <!-- Overall % -->
+                    <td class="fw-bold">{{ subject.overall_percentage }}%</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="27" class="text-muted py-3">No results available for the selected criteria.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

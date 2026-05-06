@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-4 text-center">Records of Work</h3>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- TOP FIELDS -->
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label>Teacher</label>
+                <input type="text" class="form-control"
+                    value="{{ request.user.get_full_name|default:request.user.username }}" readonly>
+            </div>
+            <div class="col-md-4">
+                <label>Subject</label>
+                <input type="text" name="subject" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+                <label>Year</label>
+                <input type="text" name="year" class="form-control" required>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <label>Term</label>
+                <input type="text" name="term" class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label>Grade</label>
+                <input type="text" name="grade" class="form-control">
+            </div>
+        </div>
+
+        <!-- TABLE -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Week</th>
+                    <th>Work Done</th>
+                    <th>Work Not Done</th>
+                    <th>Teacher's Comments</th>
+                    <th>HOD Remarks</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <tr>
+                    <td><input type="text" name="week[]" class="form-control"></td>
+                    <td><textarea name="work_done[]" class="form-control"></textarea></td>
+                    <td><textarea name="work_not_done[]" class="form-control"></textarea></td>
+                    <td><textarea name="teacher_comments[]" class="form-control"></textarea></td>
+                    <td><textarea name="hod_remarks[]" class="form-control"></textarea></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ADD ROW BUTTON -->
+        <button type="button" class="btn btn-secondary mb-3" onclick="addRow()">Add Row</button>
+
+        <br>
+
+        <!-- ACTION BUTTONS -->
+        <button type="submit" name="action" value="save" class="btn btn-primary">
+            Save Record
+        </button>
+
+        <button type="submit" name="action" value="pdf" class="btn btn-danger">
+            Save & Download PDF
+        </button>
+
+        <button type="submit" name="action" value="word" class="btn btn-success">
+            Save & Download Word
+        </button>
+    </form>
+</div>
+
+<script>
+    function addRow() {
+        let row = `
+    <tr>
+        <td><input type="text" name="week[]" class="form-control"></td>
+        <td><textarea name="work_done[]" class="form-control"></textarea></td>
+        <td><textarea name="work_not_done[]" class="form-control"></textarea></td>
+        <td><textarea name="teacher_comments[]" class="form-control"></textarea></td>
+        <td><textarea name="hod_remarks[]" class="form-control"></textarea></td>
+    </tr>`;
+        document.getElementById('table-body').insertAdjacentHTML('beforeend', row);
+    }
+</script>
+
+{% endblock %}

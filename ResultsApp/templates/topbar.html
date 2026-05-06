@@ -1,0 +1,345 @@
+{% if user.is_authenticated %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm px-4">
+    <a class="navbar-brand fw-bold" href="{% url 'index' %}">
+        <i class="fas fa-user-shield me-2"></i> Admin Portal
+    </a>
+    <ul class="navbar-nav ms-auto align-items-center">
+
+        <!-- Messages -->
+        <li class="nav-item dropdown me-3">
+            <a class="nav-link position-relative" href="#" data-bs-toggle="dropdown">
+                <i class="fas fa-envelope fa-lg"></i>
+                <span id="msg-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end p-2" style="min-width: 350px; max-width: 450px;">
+                <ul class="nav nav-tabs mb-2" id="msgTabs" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active p-1" data-bs-toggle="tab" data-bs-target="#inbox-tab">Inbox</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link p-1" data-bs-toggle="tab" data-bs-target="#compose-tab">Compose</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link p-1" data-bs-toggle="tab" data-bs-target="#sent-tab">Sent</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" style="max-height:400px; overflow-y:auto;">
+
+                    <!-- Inbox -->
+                    <div class="tab-pane fade show active" id="inbox-tab">
+                        <div id="msg-list"></div>
+                        <div class="text-center mt-2">
+                            <button class="btn btn-sm btn-danger" onclick="clearInbox()">Clear Inbox</button>
+                        </div>
+                        <div id="no-messages" class="text-muted text-center d-none mt-2">No messages</div>
+                    </div>
+
+                    <!-- Compose -->
+                    <div class="tab-pane fade" id="compose-tab">
+                        <form id="msg-form" onsubmit="sendMessage(event)" class="p-2">
+                            <select id="msg-recipient" class="form-control mb-2" required>
+                                <option value="">Select Recipient</option>
+                            </select>
+                            <input type="text" id="msg-subject" class="form-control mb-2" placeholder="Subject" required>
+                            <textarea id="msg-body" class="form-control mb-2" placeholder="Message" rows="3" required></textarea>
+                            <div class="d-flex justify-content-between">
+                                <button type="submit" class="btn btn-primary btn-sm">Send</button>
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('msg-form').reset()">Clear</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Sent -->
+                    <div class="tab-pane fade" id="sent-tab">
+                        <div id="sent-list" class="p-2 text-center text-muted">No sent messages</div>
+                    </div>
+
+                </div>
+            </div>
+        </li>
+
+        <!-- Notifications -->
+        <li class="nav-item dropdown me-3">
+            <a class="nav-link position-relative" href="#" data-bs-toggle="dropdown">
+                <i class="fas fa-bell fa-lg"></i>
+                <span id="notif-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning">0</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end p-2" style="min-width: 250px;">
+                <div id="notif-list"><div class="text-muted text-center">No notifications</div></div>
+                <div class="text-center mt-2">
+                    <button class="btn btn-sm btn-danger" onclick="clearNotifications()">Clear All</button>
+                </div>
+            </div>
+        </li>
+
+        <!-- User dropdown -->
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle fa-lg me-1"></i> {{ user.username }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <form id="logout-form" method="post" action="{% url 'index' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="dropdown-item">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+
+<!-- Message Modal -->
+<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="messageModalLabel">Message</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>From:</strong> <span id="modal-sender"></span></p>
+                <p><strong>Subject:</strong> <span id="modal-subject"></span></p>
+                <hr>
+                <p id="modal-body-text"></p>
+                <div id="reply-section" class="mt-3 d-none">
+                    <h6>Reply</h6>
+                    <form id="reply-form" onsubmit="sendReply(event)">
+                        <input type="hidden" id="reply-recipient">
+                        <input type="text" id="reply-subject" class="form-control mb-2" placeholder="Subject" required>
+                        <textarea id="reply-body" class="form-control mb-2" placeholder="Message" rows="3" required></textarea>
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary btn-sm">Send Reply</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="toggleReply()">Reply</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const csrfToken = '{{ csrf_token }}';
+let currentMessage = null;
+
+// ----------------------------
+// Load Recipients
+function loadRecipients(){
+    fetch("{% url 'message_recipients' %}")
+        .then(res=>res.json())
+        .then(data=>{
+            const select = document.getElementById('msg-recipient');
+            select.innerHTML = '<option value="">Select Recipient</option>';
+            data.users.forEach(u=>{
+                const opt = document.createElement('option');
+                opt.value = u.id;
+                opt.textContent = u.username;
+                select.appendChild(opt);
+            });
+        });
+}
+
+// ----------------------------
+// Messages
+function loadInbox(){
+    fetch("{% url 'recent_messages' %}")
+        .then(res=>res.json())
+        .then(data=>{
+            const list = document.getElementById('msg-list');
+            const noMsg = document.getElementById('no-messages');
+            list.innerHTML = '';
+            if(data.messages.length === 0){
+                noMsg.classList.remove('d-none');
+            } else {
+                noMsg.classList.add('d-none');
+                data.messages.forEach(m=>{
+                    const div = document.createElement('div');
+                    div.className = "dropdown-item d-flex justify-content-between align-items-start";
+                    div.style.cursor = "pointer";
+                    div.dataset.id = m.id;
+                    div.innerHTML = `<div><strong>${m.sender}</strong>: ${m.subject}<br><small class="text-muted">${m.timestamp}</small></div>
+                                     <button class="btn btn-sm btn-danger ms-2" onclick="deleteMessage(${m.id}); event.stopPropagation();">x</button>`;
+                    if(!m.is_read) div.style.fontWeight = "bold";
+
+                    div.addEventListener('click', ()=>{
+                        currentMessage = m;
+                        document.getElementById('modal-sender').textContent = m.sender;
+                        document.getElementById('modal-subject').textContent = m.subject;
+                        document.getElementById('modal-body-text').textContent = m.body;
+                        document.getElementById('reply-section').classList.add('d-none');
+                        new bootstrap.Modal(document.getElementById('messageModal')).show();
+                        markAsRead(m.id);
+                    });
+                    list.appendChild(div);
+                });
+            }
+            updateMessageBadge();
+        });
+}
+
+function loadSent(){
+    fetch("{% url 'sent_messages' %}")
+        .then(res=>res.json())
+        .then(data=>{
+            const list = document.getElementById('sent-list');
+            list.innerHTML = '';
+            if(data.messages.length === 0){
+                list.innerHTML = '<div class="text-muted text-center">No sent messages</div>';
+            } else {
+                data.messages.forEach(m=>{
+                    const div = document.createElement('div');
+                    div.className = "dropdown-item";
+                    div.innerHTML = `<strong>To: ${m.recipient}</strong> - ${m.subject}<br><small class="text-muted">${m.timestamp}</small>`;
+                    list.appendChild(div);
+                });
+            }
+        });
+}
+
+// Delete single message
+function deleteMessage(id){
+    if(!confirm("Delete this message?")) return;
+    fetch(`/messages/delete/${id}/`, {
+        method:'POST',
+        headers:{'X-CSRFToken': csrfToken, 'Accept':'application/json'}
+    }).then(res=>res.json())
+      .then(data=>{
+          if(data.success){
+              document.querySelector(`#msg-list div[data-id="${id}"]`)?.remove();
+              loadInbox();
+          } else alert(data.error || 'Failed to delete message');
+      });
+}
+
+// Mark message as read
+function markAsRead(id){
+    fetch(`/messages/read/${id}/`, { method:'POST', headers:{'X-CSRFToken':csrfToken} })
+        .then(()=>loadInbox());
+}
+
+// Clear inbox
+function clearInbox(){
+    if(!confirm("Mark all messages as read?")) return;
+    fetch("{% url 'clear_messages' %}", { method:'POST', headers:{'X-CSRFToken':csrfToken} })
+        .then(res=>res.json())
+        .then(data=>{
+            if(data.success){
+                document.querySelectorAll('#msg-list div.dropdown-item').forEach(div=>div.style.fontWeight='normal');
+                document.getElementById('msg-count').textContent = 0;
+            }
+        });
+}
+
+// Send message
+function sendMessage(e){
+    e.preventDefault();
+    const recipient = document.getElementById('msg-recipient').value;
+    const subject = document.getElementById('msg-subject').value;
+    const body = document.getElementById('msg-body').value;
+    if(!recipient || !subject || !body) return alert("All fields required");
+
+    fetch("{% url 'send_message' %}", {
+        method:'POST',
+        headers:{'Content-Type':'application/json','X-CSRFToken':csrfToken},
+        body: JSON.stringify({ recipient, subject, body })
+    })
+    .then(res=>res.json())
+    .then(data=>{
+        if(data.success){ 
+            document.getElementById('msg-form').reset(); 
+            loadInbox(); 
+            loadSent(); 
+        } else alert(data.error || 'Error sending message');
+    });
+}
+
+// Reply
+function toggleReply(){
+    const sec = document.getElementById('reply-section');
+    sec.classList.toggle('d-none');
+    if(currentMessage){
+        document.getElementById('reply-recipient').value = currentMessage.sender_id;
+        document.getElementById('reply-subject').value = "Re: " + currentMessage.subject;
+        document.getElementById('reply-body').value = "";
+    }
+}
+
+function sendReply(e){
+    e.preventDefault();
+    const recipient = document.getElementById('reply-recipient').value;
+    const subject = document.getElementById('reply-subject').value;
+    const body = document.getElementById('reply-body').value;
+    if(!recipient || !subject || !body) return alert("All fields required");
+
+    fetch("{% url 'send_message' %}", {
+        method:'POST',
+        headers:{'Content-Type':'application/json','X-CSRFToken':csrfToken},
+        body: JSON.stringify({ recipient, subject, body })
+    })
+    .then(res=>res.json())
+    .then(data=>{
+        if(data.success){
+            document.getElementById('reply-form').reset();
+            document.getElementById('reply-section').classList.add('d-none');
+            loadInbox(); loadSent();
+            bootstrap.Modal.getInstance(document.getElementById('messageModal')).hide();
+        } else alert(data.error || 'Error sending reply');
+    });
+}
+
+// ----------------------------
+// Notifications
+function loadNotifications(){
+    fetch("{% url 'unread_notifications' %}")
+        .then(res=>res.json())
+        .then(data=>{
+            const list=document.getElementById('notif-list');
+            list.innerHTML='';
+            if(data.notifications.length===0){ 
+                list.innerHTML='<div class="text-muted text-center">No notifications</div>'; 
+            } else {
+                data.notifications.forEach(n=>{
+                    const div=document.createElement('div');
+                    div.className="dropdown-item";
+                    div.dataset.id = n.id;
+                    div.innerHTML=`<a href="${n.link}">${n.message}</a><br><small class="text-muted">${n.timestamp}</small>`;
+                    if(!n.is_read) div.style.fontWeight = 'bold';
+                    list.appendChild(div);
+                });
+            }
+            document.getElementById('notif-count').textContent=data.unread_count;
+        });
+}
+
+// Clear all notifications
+function clearNotifications(){
+    if(!confirm("Mark all notifications as read?")) return;
+    fetch("{% url 'clear_notifications' %}", { method:'POST', headers:{'X-CSRFToken':csrfToken} })
+        .then(res=>res.json())
+        .then(data=>{
+            if(data.success){
+                document.querySelectorAll('#notif-list .dropdown-item').forEach(div=>div.style.fontWeight='normal');
+                document.getElementById('notif-count').textContent = 0;
+            }
+        });
+}
+
+// ----------------------------
+// Initial load & auto-refresh
+loadRecipients();
+loadInbox();
+loadSent();
+loadNotifications();
+
+setInterval(loadInbox,10000);
+setInterval(loadSent,20000);
+setInterval(loadNotifications,15000);
+</script>
+{% endif %}

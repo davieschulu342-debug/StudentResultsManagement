@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-4"><i class="fas fa-file-alt me-2"></i>Generate Report Forms</h3>
+
+    <form method="get" id="reportForm">
+        <div class="row g-3 align-items-center mb-3">
+            <div class="col-md-6">
+                <label for="classSelect" class="form-label">Select Class</label>
+                <select name="class_id" id="classSelect" class="form-select" required>
+                    <option value="">-- Select Class --</option>
+                    {% for cls in classes %}
+                    <option value="{{ cls.id }}" data-level="{{ cls.level }}">
+                        {{ cls.class_name }} ({{ cls.section }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label for="level" class="form-label">Class Level</label>
+                <input type="text" id="levelDisplay" class="form-control" placeholder="Level will appear here" readonly>
+            </div>
+
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-file-lines me-1"></i> Generate
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    const classSelect = document.getElementById('classSelect');
+    const levelDisplay = document.getElementById('levelDisplay');
+
+    classSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        levelDisplay.value = selectedOption.dataset.level || '';
+    });
+
+    // Redirect form to report page
+    document.getElementById('reportForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const classId = classSelect.value;
+        if (classId) {
+            window.location.href = `/report_form/${classId}/`;
+        }
+    });
+</script>
+{% endblock %}

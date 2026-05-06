@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BupeSmart | Results Management System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<style>
+/* ================= GLOBAL STYLES ================= */
+
+body {
+    padding-top: 96px; /* default padding for fixed top bar + navbar */
+}
+
+/* Top bar */
+.top-bar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    min-height: 36px;
+    background: linear-gradient(90deg, #2563eb, #4f46e5);
+    color: #fff;
+    font-size: 0.85rem;
+    z-index: 1050;
+}
+
+/* Main navbar */
+.main-navbar {
+    position: fixed;
+    top: 36px;
+    width: 100%;
+    background-color: #0d1b2a;
+    z-index: 1040;
+}
+
+.main-navbar .nav-link,
+.main-navbar .navbar-brand {
+    color: #fff !important;
+}
+
+.main-navbar .nav-link:hover {
+    color: #60a5fa !important;
+}
+
+/* Footer */
+footer {
+    background: #0d1b2a;
+    color: #cbd5e1;
+}
+
+/* Mobile fix */
+@media (max-width: 991px) {
+    .top-bar,
+    .main-navbar {
+        position: static;
+    }
+    body {
+        padding-top: 0;
+    }
+}
+
+/* Footer links */
+.footer-link {
+    color: #cbd5e1;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+.footer-link:hover {
+    color: #38bdf8;
+}
+</style>
+
+<body>
+
+<!-- ================= TOP BAR ================= -->
+{% block top_bar %}
+<div class="top-bar">
+    <div class="container d-flex justify-content-between align-items-center py-1">
+        <div>
+            <i class="fas fa-envelope"></i> bupesmart@gmail.com |
+            <i class="fas fa-phone"></i> +260 975 307 194
+        </div>
+        <div>
+            <a href="https://wa.me/260975307194" class="text-white me-2">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+            <a href="#" class="text-white"><i class="fab fa-facebook-f"></i></a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<!-- ================= MAIN NAVBAR ================= -->
+{% block main_navbar %}
+<nav class="navbar navbar-expand-lg main-navbar">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/">
+            <i class="fas fa-chalkboard-teacher me-1"></i> BupeSmart
+        </a>
+
+        <button class="navbar-toggler text-white" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="mainNavbar">
+            <ul class="navbar-nav align-items-lg-center">
+                <li class="nav-item">
+                    <a class="nav-link px-3" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-3" href="#features">Features</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-3" href="{% url 'teacher_login' %}">Login</a>
+                </li>
+                <li class="nav-item ms-lg-2">
+                    <a class="nav-link border rounded px-3 text-warning border-warning" href="{% url 'admin_login' %}">
+                        Admin
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+<!-- ================= PAGE CONTENT ================= -->
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer class="pt-5 pb-3 mt-5">
+    <div class="container">
+        <div class="row g-4">
+
+            <!-- Brand / About -->
+            <div class="col-lg-4 col-md-6">
+                <h5 class="fw-bold mb-3 text-white">BupeSmart</h5>
+                <p class="small">
+                    BupeSmart is a modern school management system designed to simplify
+                    academic administration, improve communication, and enhance performance
+                    tracking for schools of all sizes.
+                </p>
+                <div class="d-flex gap-3 mt-3">
+                    <a href="#" class="text-white fs-5"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="text-white fs-5"><i class="fab fa-x-twitter"></i></a>
+                    <a href="https://wa.me/260975307194" class="text-white fs-5"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" class="text-white fs-5"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-lg-2 col-md-6">
+                <h6 class="fw-bold mb-3 text-white">Quick Links</h6>
+                <ul class="list-unstyled small">
+                    <li class="mb-2"><a href="/" class="footer-link">Home</a></li>
+                    <li class="mb-2"><a href="#features" class="footer-link">Features</a></li>
+                    <li class="mb-2"><a href="#notices" class="footer-link">Notices</a></li>
+                    <li><a href="#contact" class="footer-link">Contact</a></li>
+                </ul>
+            </div>
+
+            <!-- Portals -->
+            <div class="col-lg-3 col-md-6">
+                <h6 class="fw-bold mb-3 text-white">Portals</h6>
+                <ul class="list-unstyled small">
+                    <li class="mb-2"><a href="{% url 'admin_login' %}" class="footer-link">Admin Portal</a></li>
+                    <li class="mb-2"><a href="{% url 'teacher_login' %}" class="footer-link">Teacher Portal</a></li>
+                    <li>Student Portal <span class="badge bg-secondary ms-1">Coming Soon</span></li>
+                </ul>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="col-lg-3 col-md-6">
+                <h6 class="fw-bold mb-3 text-white">Contact Us</h6>
+                <p class="small mb-2"><i class="fas fa-envelope me-2"></i> bupesmart@gmail.com</p>
+                <p class="small mb-2"><i class="fas fa-phone me-2"></i> +260 975 307 194</p>
+                <p class="small"><i class="fas fa-map-marker-alt me-2"></i> Muchinga Province, Zambia</p>
+            </div>
+
+        </div>
+
+        <hr class="border-secondary mt-4">
+
+        <div class="row align-items-center small">
+            <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
+                © {{ now|date:"Y" }} BupeSmart. All rights reserved.
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <a href="#" class="footer-link me-3">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>

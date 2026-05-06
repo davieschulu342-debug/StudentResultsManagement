@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{# 🔴 Disable Top Bar and Navbar #}
+{% block top_bar %}{% endblock %}
+{% block main_navbar %}{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-9 col-xl-8">
+
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-body p-5">
+
+                    <!-- Header -->
+                    <div class="text-center mb-5">
+                        <h2 class="fw-bold text-primary">Add Student Results</h2>
+                        <p class="text-muted mb-0">
+                            Select class and assessment details to proceed
+                        </p>
+                    </div>
+
+                    <!-- Messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} text-center">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- Form -->
+                    <form method="post" id="addResultsForm" novalidate>
+                        {% csrf_token %}
+
+                        <!-- SECTION: CLASS INFO -->
+                        <div class="section-card">
+                            <h5 class="section-title">
+                                <i class="fas fa-school me-2"></i>Class Information
+                            </h5>
+
+                            <div class="row g-4">
+                                <!-- Class -->
+                                <div class="col-md-6">
+                                    <label class="form-label">Class</label>
+                                    <select name="class" id="classSelect"
+                                            class="form-select custom-input" required>
+                                        <option value="">-- Select Class --</option>
+                                        {% for cls in classes %}
+                                            <option value="{{ cls.id }}"
+                                                    data-session="{{ cls.session }}">
+                                                {{ cls.class_name }} {{ cls.numeric_name }} {{ cls.section }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <!-- Intake Year -->
+                                <div class="col-md-6">
+                                    <label class="form-label">Intake Year</label>
+                                    <input type="text"
+                                           id="session"
+                                           class="form-control custom-input readonly-input"
+                                           placeholder="Auto-filled"
+                                           readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION: SUBJECT & TERM -->
+                        <div class="section-card">
+                            <h5 class="section-title">
+                                <i class="fas fa-book-open me-2"></i>Assessment Details
+                            </h5>
+
+                            <div class="row g-4">
+                                <!-- Subject -->
+                                <div class="col-md-6">
+                                    <label class="form-label">Subject</label>
+                                    <select name="subject"
+                                            id="subjectSelect"
+                                            class="form-select custom-input"
+                                            required
+                                            disabled>
+                                        <option value="">-- Select Class First --</option>
+                                    </select>
+                                </div>
+
+                                <!-- Test Type -->
+                                <div class="col-md-6">
+                                    <label class="form-label">Test Type</label>
+                                    <select name="test_type"
+                                            class="form-select custom-input"
+                                            required>
+                                        <option value="">-- Select Test --</option>
+                                        <option value="TEST1">Test 1</option>
+                                        <option value="TEST2">Test 2</option>
+                                        <option value="EOT">End of Term</option>
+                                    </select>
+                                </div>
+
+                                <!-- Term -->
+                                <div class="col-md-6">
+                                    <label class="form-label">Term</label>
+                                    <select name="term"
+                                            class="form-select custom-input"
+                                            required>
+                                        <option value="">-- Select Term --</option>
+                                        <option value="TERM1">Term 1</option>
+                                        <option value="TERM2">Term 2</option>
+                                        <option value="TERM3">Term 3</option>
+                                    </select>
+                                </div>
+
+                                <!-- Academic Year -->
+                                <div class="col-md-6">
+                                    <label class="form-label">Academic Year</label>
+                                    <select name="year"
+                                            class="form-select custom-input"
+                                            required>
+                                        <option value="">-- Select Year --</option>
+                                        {% for year_option in years %}
+                                            <option value="{{ year_option }}"
+                                                {% if current_year == year_option %}selected{% endif %}>
+                                                {{ year_option }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SUBMIT -->
+                        <div class="text-center mt-5">
+                            <button type="submit" class="btn proceed-btn">
+                                <i class="fas fa-pen-alt me-2"></i>
+                                Proceed to Enter Marks
+                            </button>
+                        </div>
+                    </form>
+                    <!-- End Form -->
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$(document).ready(function () {
+
+    const classSelect = $('#classSelect');
+    const subjectSelect = $('#subjectSelect');
+    const sessionInput = $('#session');
+
+    // Update intake year
+    classSelect.on('change', function () {
+        const intakeYear = $(this).find(':selected').data('session') || '';
+        sessionInput.val(intakeYear);
+    });
+
+    // Load subjects dynamically (department-safe)
+    classSelect.on('change', function () {
+        const classId = $(this).val();
+
+        subjectSelect.prop('disabled', true)
+                     .html('<option value="">Loading subjects...</option>');
+
+        if (!classId) {
+            subjectSelect.html('<option value="">-- Select Class First --</option>');
+            return;
+        }
+
+        $.ajax({
+            url: "{% url 'get_subjects_by_class' %}",
+            data: { class_id: classId },
+            dataType: 'json',
+            success: function (data) {
+                subjectSelect.empty();
+
+                if (data.subjects.length > 0) {
+                    subjectSelect.append('<option value="">-- Select Subject --</option>');
+                    $.each(data.subjects, function (i, subject) {
+                        const code = subject.code ? ' - ' + subject.code : '';
+                        subjectSelect.append(
+                            `<option value="${subject.id}">${subject.name}${code}</option>`
+                        );
+                    });
+                    subjectSelect.prop('disabled', false);
+                } else {
+                    subjectSelect.append('<option value="">No subjects found</option>');
+                }
+            }
+        });
+    });
+
+    // Client-side validation
+    $('#addResultsForm').on('submit', function (e) {
+        let valid = true;
+
+        $(this).find('select[required]').each(function () {
+            if (!$(this).val()) {
+                valid = false;
+                $(this).addClass('is-invalid');
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+
+        if (!valid) {
+            e.preventDefault();
+            $('html, body').animate({
+                scrollTop: $('.is-invalid').first().offset().top - 120
+            }, 400);
+        }
+    });
+
+});
+</script>
+
+<style>
+.section-card {
+    background: linear-gradient(145deg, #ffffff, #f2f6ff);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+}
+
+.section-title {
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.custom-input {
+    height: 52px;
+    border-radius: 12px;
+    border: 1px solid #dfe6f1;
+    font-size: 0.95rem;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.custom-input:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.15rem rgba(78, 115, 223, 0.25);
+}
+
+.readonly-input {
+    background: #eef3ff;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.proceed-btn {
+    background: linear-gradient(135deg, #4e73df, #224abe);
+    color: #fff;
+    border: none;
+    padding: 14px 42px;
+    font-size: 1.05rem;
+    border-radius: 30px;
+    box-shadow: 0 12px 30px rgba(78,115,223,0.4);
+    transition: all 0.3s ease;
+}
+
+.proceed-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px rgba(78,115,223,0.55);
+}
+</style>
+
+{% endblock %}

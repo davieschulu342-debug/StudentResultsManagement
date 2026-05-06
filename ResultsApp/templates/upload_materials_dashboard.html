@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+
+    <h2 class="mb-4 text-center">Upload Learning Materials</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row g-5">
+
+        <!-- Teacher Material Form -->
+        <div class="col-md-6">
+            <div class="card shadow-sm rounded-4 border-0 p-4">
+                <h4 class="mb-3">Teacher Material</h4>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ teacher_form.as_p }}
+                    <button type="submit" name="upload_teacher" class="btn btn-primary w-100">Upload Teacher Material</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Student Material Form -->
+        <div class="col-md-6">
+            <div class="card shadow-sm rounded-4 border-0 p-4">
+                <h4 class="mb-3">Student Material</h4>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ student_form.as_p }}
+                    <button type="submit" name="upload_student" class="btn btn-success w-100">Upload Student Material</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

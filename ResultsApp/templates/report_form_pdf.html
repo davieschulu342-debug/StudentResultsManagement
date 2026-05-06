@@ -1,0 +1,103 @@
+{% load static %}
+
+{% load results_extras %}
+
+{% load grade_filters %}  {# Custom grade filter #}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Report Form - {{ cls.class_name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            margin: 0.5in;
+        }
+        h2, h4 {
+            text-align: center;
+            margin: 0;
+        }
+        h2 { margin-bottom: 5px; }
+        h4 { margin-top: 2px; margin-bottom: 10px; font-weight: normal; }
+        .school-info, .class-info {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .school-info td, .class-info td {
+            padding: 2px 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 4px 6px;
+            text-align: center;
+        }
+        th {
+            background-color: #f0f0f0;
+        }
+        .student-name {
+            text-align: left;
+        }
+        .grading {
+            font-weight: bold;
+            color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- School Header -->
+    <h2>Muyombe Day Secondary School</h2>
+    <h4>Report Form - {{ cls.class_name }} ({{ cls.level }})</h4>
+
+    <!-- Class Details -->
+    <table class="class-info">
+        <tr>
+            <td><strong>Academic Year:</strong> {{ cls.year }}</td>
+            <td><strong>Intake:</strong> {{ cls.session }}</td>
+            <td><strong>Grading System:</strong> 
+                {% if cls.level == "SENIOR" %}Grade 12
+                {% elif cls.level == "JUNIOR" %}Grade 9
+                {% else %}Grade 7{% endif %}
+            </td>
+        </tr>
+    </table>
+
+    <!-- Report Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Student Name</th>
+                {% for subject in subjects %}
+                    <th>{{ subject.subject_name }}</th>
+                {% endfor %}
+                <th>Total</th>
+                <th>Average</th>
+                <th>Grade</th>
+            </tr>
+        </thead>
+        <tbody>
+{% for student in students %}
+<tr>
+    <td>{{ forloop.counter }}</td>
+    <td class="student-name">{{ student.first_name }} {{ student.last_name }}</td>
+    {% for subject in subjects %}
+       <td>{{ student.results|get_marks:subject.id }}</td>
+    {% endfor %}
+    <td>{{ student.total }}</td>
+    <td>{{ student.average|floatformat:2 }}</td>
+    <td class="grading">{{ student.total|average_grade:cls.level }}</td>
+</tr>
+{% endfor %}
+</tbody>
+    </table>
+
+</body>
+</html>

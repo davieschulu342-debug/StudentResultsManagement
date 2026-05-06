@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-4 text-center">Edit Teacher: {{ teacher.teacher_name }}</h3>
+
+    <!-- IMPORTANT: enctype added for photo upload -->
+    <form method="post" enctype="multipart/form-data" class="p-4 bg-white rounded shadow">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <!-- Row 1: Email + Passwords -->
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label>Email</label>
+                {{ form.email }}
+                {{ form.email.errors }}
+            </div>
+            <div class="col-md-3">
+                <label>Password (leave blank to keep current)</label>
+                {{ form.password }}
+                {{ form.password.errors }}
+            </div>
+            <div class="col-md-3">
+                <label>Confirm Password</label>
+                {{ form.confirm_password }}
+                {{ form.confirm_password.errors }}
+            </div>
+        </div>
+
+        <!-- Row 2: Name, Gender, Marital Status -->
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label>Teacher Name</label>
+                {{ form.teacher_name }}
+                {{ form.teacher_name.errors }}
+            </div>
+            <div class="col-md-3">
+                <label>Gender</label>
+                {{ form.gender }}
+                {{ form.gender.errors }}
+            </div>
+            <div class="col-md-3">
+                <label>Marital Status</label>
+                {{ form.marital_status }}
+                {{ form.marital_status.errors }}
+            </div>
+        </div>
+
+        <!-- Row 3: Phone, Departments, Employment No -->
+        <div class="row g-3 mb-3">
+            <div class="col-md-3">
+                <label>Phone Number</label>
+                {{ form.phone_no }}
+                {{ form.phone_no.errors }}
+            </div>
+            <div class="col-md-3">
+                <label>Department 1</label>
+                {{ form.department1 }}
+                {{ form.department1.errors }}
+            </div>
+            <div class="col-md-3">
+                <label>Department 2</label>
+                {{ form.department2 }}
+                {{ form.department2.errors }}
+            </div>
+            <div class="col-md-3">
+                <label>Employment Number</label>
+                {{ form.Employ_No }}
+                {{ form.Employ_No.errors }}
+            </div>
+        </div>
+
+        <!-- Row 4: Qualifications -->
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <label>Academic Qualification</label>
+                {{ form.academic_qualification }}
+                {{ form.academic_qualification.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>Professional Qualification</label>
+                {{ form.professional_qualification }}
+                {{ form.professional_qualification.errors }}
+            </div>
+            <div class="col-md-2">
+                <label>Major</label>
+                {{ form.major }}
+                {{ form.major.errors }}
+            </div>
+            <div class="col-md-2">
+                <label>Minor</label>
+                {{ form.minor }}
+                {{ form.minor.errors }}
+            </div>
+        </div>
+
+        <!-- Row 5: Appointment Dates -->
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <label>Date of First Appointment</label>
+                {{ form.date_first_app }}
+                {{ form.date_first_app.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>Date of Current Appointment</label>
+                {{ form.date_current_app }}
+                {{ form.date_current_app.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>Date of Retirement</label>
+                {{ form.date_of_retirement }}
+                {{ form.date_of_retirement.errors }}
+            </div>
+        </div>
+
+        <!-- Row 6: Identification Numbers -->
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <label>NRC Number</label>
+                {{ form.NRC_No }}
+                {{ form.NRC_No.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>TCZ Number</label>
+                {{ form.TCZ_No }}
+                {{ form.TCZ_No.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>TS Number</label>
+                {{ form.TS_No }}
+                {{ form.TS_No.errors }}
+            </div>
+        </div>
+
+        <!-- Row 7: Disability -->
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label>Disability</label>
+                {{ form.disability }}
+                {{ form.disability.errors }}
+            </div>
+        </div>
+
+        <!-- Row 8: Photo Editing -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label>Teacher Photo</label>
+                {{ form.photo }}
+                {{ form.photo.errors }}
+            </div>
+
+            <div class="col-md-6 text-center">
+                <label>Current Photo</label><br>
+                {% if teacher.photo %}
+                    <img src="{{ teacher.photo.url }}" 
+                         alt="Teacher Photo"
+                         class="img-thumbnail shadow"
+                         style="max-height: 180px;">
+                {% else %}
+                    <img src="{% static 'images/default-user.png' %}" 
+                         alt="No Photo"
+                         class="img-thumbnail shadow"
+                         style="max-height: 180px;">
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="mt-4 text-center">
+            <button type="submit" class="btn btn-primary px-4">Update Teacher</button>
+            <a href="{% url 'manage_teachers' %}" class="btn btn-secondary ms-2 px-4">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

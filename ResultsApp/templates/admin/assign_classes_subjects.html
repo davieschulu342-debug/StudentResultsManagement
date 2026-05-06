@@ -1,0 +1,165 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+    <!-- ================= HEADER ================= -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">
+            <i class="fas fa-user-shield text-primary me-2"></i>
+            Assign Subjects & Classes to Teachers
+        </h4>
+    </div>
+
+    <!-- ================= ALERT MESSAGES ================= -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- ================= FORM CARD ================= -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white fw-semibold">
+            <i class="fas fa-plus-circle text-success me-2"></i>
+            New Assignment
+        </div>
+
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="row g-3">
+
+                    <!-- Teacher -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Teacher</label>
+                        <select name="teacher" class="form-select" required>
+                            <option value="">-- Select Teacher --</option>
+                            {% for t in teachers %}
+                                <option value="{{ t.id }}">
+                                    {{ t.surname }} {{ t.first_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Subject -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Subject</label>
+                        <select name="subject" class="form-select" required>
+                            <option value="">-- Select Subject --</option>
+                            {% for s in subjects %}
+                                <option value="{{ s.id }}">
+                                    {{ s.subject_name }} ({{ s.subject_code }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Class -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Class</label>
+                        <select name="class" class="form-select" required>
+                            <option value="">-- Select Class --</option>
+                            {% for c in classes %}
+                                <option value="{{ c.id }}">
+                                    {{ c.class_name }} {{ c.numeric_name }} {{ c.section }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                </div>
+
+                <!-- BUTTON -->
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fas fa-save me-2"></i>Assign
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= TABLE ================= -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white fw-semibold d-flex justify-content-between align-items-center">
+            <span>
+                <i class="fas fa-list text-info me-2"></i>
+                Current Assignments
+            </span>
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 50px;">#</th>
+                            <th>Teacher</th>
+                            <th>Subject</th>
+                            <th>Class</th>
+                            <th style="width: 100px;">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for a in assignments %}
+                        <tr>
+
+                            <td>{{ forloop.counter }}</td>
+
+                            <td>
+                                <i class="fas fa-user text-secondary me-1"></i>
+                                {{ a.teacher.surname }} {{ a.teacher.first_name }}
+                            </td>
+
+                            <td>
+                                <i class="fas fa-book text-primary me-1"></i>
+                                {{ a.subject.subject_name }}
+                            </td>
+
+                            <td>
+                                <i class="fas fa-chalkboard text-success me-1"></i>
+                                {{ a.assigned_class.class_name }}
+                                {{ a.assigned_class.numeric_name }}
+                                {{ a.assigned_class.section }}
+                            </td>
+
+                            <td class="text-center">
+                                <a href="{% url 'delete_assignment' a.id %}"
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('Delete this assignment?')">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                <i class="fas fa-info-circle me-1"></i>
+                                No assignments found
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,21 @@
+<form method="POST">
+    {% csrf_token %}
+    
+    <input type="text" name="teacher_name" placeholder="Teacher Name" class="form-control mb-2" required>
+    
+    <input type="text" name="subject" placeholder="Subject" class="form-control mb-2" required>
+    
+    <input type="text" name="class_name" placeholder="Class (e.g Form 1 Blue)" class="form-control mb-2">
+
+    <input type="date" name="date" class="form-control mb-2" required>
+
+    <input type="text" name="topic" placeholder="Topic" class="form-control mb-2" required>
+
+    <input type="text" name="subtopic" placeholder="Subtopic" class="form-control mb-2" required>
+
+    <input type="text" name="duration" placeholder="Duration (e.g 80 minutes)" class="form-control mb-2">
+
+    <input type="text" name="time" placeholder="Time (e.g 14:20 - 15:40)" class="form-control mb-2">
+
+    <button type="submit" class="btn btn-primary w-100">Generate Lesson Plan</button>
+</form>

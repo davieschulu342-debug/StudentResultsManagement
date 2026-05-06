@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block top_bar %}{% endblock %}
+{% block main_navbar %}{% endblock %}
+
+{% block content %}
+
+<style>
+    .form-wrapper {
+        max-width: 1150px;
+        margin: auto;
+    }
+
+    .section-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-top: 45px;
+        margin-bottom: 20px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #e9ecef;
+        color: #0d6efd;
+    }
+
+    .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 12px;
+    }
+
+    .checkbox-item {
+        background: #f8f9fa;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid #dee2e6;
+        transition: 0.2s ease;
+    }
+
+    .checkbox-item:hover {
+        background: #eef3ff;
+        border-color: #0d6efd;
+    }
+
+    .photo-preview {
+        width: 170px;
+        height: 170px;
+        object-fit: cover;
+        border-radius: 15px;
+        border: 3px solid #dee2e6;
+    }
+
+    .card-custom {
+        border-radius: 20px;
+    }
+
+    .password-wrapper {
+        position: relative;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 15px;
+        top: 38px;
+        cursor: pointer;
+        color: #6c757d;
+    }
+</style>
+
+<div class="container mb-5 form-wrapper">
+    <div class="card shadow-lg border-0 card-custom">
+        <div class="card-body p-5">
+
+            <h3 class="text-center fw-bold text-primary mb-4">
+                {% if teacher %} Edit Teacher Profile {% else %} Add New Teacher {% endif %}
+            </h3>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    Please correct the errors below.
+                </div>
+                {% endif %}
+
+                <!-- PROFILE PHOTO -->
+                <div class="section-title">Profile Photo</div>
+                <div class="row align-items-center g-3">
+                    <div class="col-md-6">
+                        {{ form.photo.label_tag }}
+                        {{ form.photo|add_class:"form-control" }}
+                    </div>
+
+                    <div class="col-md-6 text-center">
+                        <img id="photoPreview"
+                             src="{% if teacher and teacher.photo %}{{ teacher.photo.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}"
+                             class="photo-preview">
+                    </div>
+                </div>
+
+                <!-- PERSONAL INFORMATION -->
+                <div class="section-title">Personal Information</div>
+                <div class="row g-3">
+                    <div class="col-md-3">{{ form.title.label_tag }} {{ form.title|add_class:"form-select" }}</div>
+                    <div class="col-md-3">{{ form.first_name.label_tag }} {{ form.first_name|add_class:"form-control" }}</div>
+                    <div class="col-md-3">{{ form.surname.label_tag }} {{ form.surname|add_class:"form-control" }}</div>
+                    <div class="col-md-3">{{ form.other_names.label_tag }} {{ form.other_names|add_class:"form-control" }}</div>
+
+                    <div class="col-md-3">{{ form.gender.label_tag }} {{ form.gender|add_class:"form-select" }}</div>
+                    <div class="col-md-3">{{ form.date_of_birth.label_tag }} {{ form.date_of_birth|add_class:"form-control" }}</div>
+                    <div class="col-md-3">{{ form.marital_status.label_tag }} {{ form.marital_status|add_class:"form-select" }}</div>
+                    <div class="col-md-3">{{ form.phone_number.label_tag }} {{ form.phone_number|add_class:"form-control" }}</div>
+
+                    <div class="col-md-6">{{ form.email.label_tag }} {{ form.email|add_class:"form-control" }}</div>
+                </div>
+
+                <!-- ACCOUNT SECURITY (UPDATED ONLY THIS SECTION) -->
+                <div class="section-title">Account Security</div>
+
+                <div class="row g-3">
+
+                    <div class="col-md-6 password-wrapper">
+                        {{ form.password.label_tag }}
+                        {{ form.password|add_class:"form-control" }}
+                        <span class="toggle-password" onclick="togglePassword('id_password')">👁</span>
+
+                        <div class="progress mt-2" style="height:6px;">
+                            <div id="passwordStrengthBar" class="progress-bar"></div>
+                        </div>
+                        <small id="passwordStrengthText" class="text-muted"></small>
+
+                        <small class="text-muted d-block">
+                            Leave blank when editing to keep current password.
+                        </small>
+                    </div>
+
+                    <div class="col-md-6 password-wrapper">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" class="form-control">
+                        <span class="toggle-password" onclick="togglePassword('confirmPassword')">👁</span>
+                        <small id="passwordMatchMessage" class="text-danger"></small>
+                    </div>
+
+                </div>
+
+                <!-- EVERYTHING BELOW REMAINS EXACTLY AS YOUR ORIGINAL -->
+
+                <!-- Departments -->
+                <div class="section-title">Departments</div>
+                <div class="row g-3">
+                    <div class="col-md-6">{{ form.department1.label_tag }} {{ form.department1|add_class:"form-select" }}</div>
+                    <div class="col-md-6">{{ form.department2.label_tag }} {{ form.department2|add_class:"form-select" }}</div>
+                </div>
+
+                <!-- Academic -->
+                <div class="section-title">Academic & Professional Information</div>
+                <div class="row g-3">
+                    <div class="col-md-6">{{ form.academic_qualification.label_tag }} {{ form.academic_qualification|add_class:"form-control" }}</div>
+                    <div class="col-md-6">{{ form.professional_qualification.label_tag }} {{ form.professional_qualification|add_class:"form-control" }}</div>
+                    <div class="col-md-6">{{ form.major.label_tag }} {{ form.major|add_class:"form-control" }}</div>
+                    <div class="col-md-6">{{ form.minor.label_tag }} {{ form.minor|add_class:"form-control" }}</div>
+                    <div class="col-md-6">{{ form.college_university.label_tag }} {{ form.college_university|add_class:"form-control" }}</div>
+                    <div class="col-md-6">{{ form.year_of_graduation.label_tag }} {{ form.year_of_graduation|add_class:"form-control" }}</div>
+                </div>
+
+                <!-- Salary -->
+                <div class="section-title">Salary & Pay Information</div>
+                <div class="row g-3">
+                    <div class="col-md-4">{{ form.salary_scale.label_tag }} {{ form.salary_scale|add_class:"form-control" }}</div>
+                    <div class="col-md-4">{{ form.pay_point.label_tag }} {{ form.pay_point|add_class:"form-control" }}</div>
+                    <div class="col-md-4">{{ form.district_of_pay_point.label_tag }} {{ form.district_of_pay_point|add_class:"form-control" }}</div>
+                </div>
+
+                <!-- Next of Kin -->
+                <div class="section-title">Next of Kin</div>
+                <div class="row g-3">
+                    <div class="col-md-6">{{ form.next_of_kin_name.label_tag }} {{ form.next_of_kin_name|add_class:"form-control" }}</div>
+                    <div class="col-md-6">{{ form.next_of_kin_phone.label_tag }} {{ form.next_of_kin_phone|add_class:"form-control" }}</div>
+                    <div class="col-md-6">{{ form.next_of_kin_relationship.label_tag }} {{ form.next_of_kin_relationship|add_class:"form-select" }}</div>
+                    <div class="col-md-6">{{ form.next_of_kin_district.label_tag }} {{ form.next_of_kin_district|add_class:"form-control" }}</div>
+                </div>
+
+                <!-- Banking -->
+                <div class="section-title">Banking Information</div>
+                <div class="row g-3">
+                    <div class="col-md-4">{{ form.bank_name.label_tag }} {{ form.bank_name|add_class:"form-control" }}</div>
+                    <div class="col-md-4">{{ form.account_number.label_tag }} {{ form.account_number|add_class:"form-control" }}</div>
+                    <div class="col-md-4">{{ form.branch_name.label_tag }} {{ form.branch_name|add_class:"form-control" }}</div>
+                </div>
+
+                <!-- Location -->
+                <div class="section-title">Location Information</div>
+                <div class="row g-3">
+                    <div class="col-md-6">{{ form.current_station.label_tag }} {{ form.current_station|add_class:"form-control" }}</div>
+                    <div class="col-md-6">{{ form.district.label_tag }} {{ form.district|add_class:"form-control" }}</div>
+                    <div class="col-md-6">{{ form.distance_from_DEBs.label_tag }} {{ form.distance_from_DEBs|add_class:"form-control" }}</div>
+                </div>
+
+                <!-- Identification -->
+                <div class="section-title">Identification Numbers</div>
+                <div class="row g-3">
+                    <div class="col-md-3">{{ form.NRC_No.label_tag }} {{ form.NRC_No|add_class:"form-control" }}</div>
+                    <div class="col-md-3">{{ form.TCZ_No.label_tag }} {{ form.TCZ_No|add_class:"form-control" }}</div>
+                    <div class="col-md-3">{{ form.TS_No.label_tag }} {{ form.TS_No|add_class:"form-control" }}</div>
+                    <div class="col-md-3">{{ form.Employ_No.label_tag }} {{ form.Employ_No|add_class:"form-control" }}</div>
+                </div>
+
+                <!-- Classes -->
+                <div class="section-title">Assigned Classes</div>
+                <div class="checkbox-grid">
+                    {% for checkbox in form.classes %}
+                    <div class="checkbox-item">
+                        {{ checkbox.tag }}
+                        <label for="{{ checkbox.id_for_label }}">
+                            {{ checkbox.choice_label }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Subjects -->
+                <div class="section-title">Assigned Subjects</div>
+                <div class="checkbox-grid">
+                    {% for checkbox in form.subjects %}
+                    <div class="checkbox-item">
+                        {{ checkbox.tag }}
+                        <label for="{{ checkbox.id_for_label }}">
+                            {{ checkbox.choice_label }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Buttons -->
+                <div class="mt-5 text-center">
+                    <button type="submit" class="btn btn-primary px-5 py-2 rounded-pill shadow-sm">
+                        {% if teacher %} Update Teacher {% else %} Save Teacher {% endif %}
+                    </button>
+
+                    <a href="{% url 'manage_teachers' %}"
+                       class="btn btn-outline-secondary px-5 py-2 rounded-pill">
+                        Cancel
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const passwordInput = document.getElementById("id_password");
+    const confirmPasswordInput = document.getElementById("confirmPassword");
+    const strengthBar = document.getElementById("passwordStrengthBar");
+    const strengthText = document.getElementById("passwordStrengthText");
+    const matchMessage = document.getElementById("passwordMatchMessage");
+    const form = document.querySelector("form");
+
+    function checkStrength(password) {
+        let strength = 0;
+        if (password.length >= 8) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^A-Za-z0-9]/.test(password)) strength++;
+        return strength;
+    }
+
+    passwordInput.addEventListener("input", function () {
+        const strength = checkStrength(this.value);
+        strengthBar.style.width = (strength * 25) + "%";
+    });
+
+    confirmPasswordInput.addEventListener("input", function () {
+        if (passwordInput.value !== confirmPasswordInput.value) {
+            matchMessage.textContent = "Passwords do not match";
+        } else {
+            matchMessage.textContent = "";
+        }
+    });
+
+    form.addEventListener("submit", function (e) {
+        if (passwordInput.value && passwordInput.value !== confirmPasswordInput.value) {
+            e.preventDefault();
+            matchMessage.textContent = "Passwords do not match";
+        }
+    });
+
+    function togglePassword(id) {
+        const input = document.getElementById(id);
+        input.type = input.type === "password" ? "text" : "password";
+    }
+</script>
+
+{% endblock %}

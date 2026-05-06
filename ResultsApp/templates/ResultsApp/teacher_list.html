@@ -1,0 +1,18 @@
+<!-- ResultsApp/templates/ResultsApp/teacher_list.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Teacher List</title>
+</head>
+<body>
+    <h1>Teacher List</h1>
+    <ul>
+    {% for teacher in teachers %}
+        <li>{{ teacher.teacher_name }} - {{ teacher.department }}</li>
+    {% empty %}
+        <li>No teachers found.</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>

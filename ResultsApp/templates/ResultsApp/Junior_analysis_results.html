@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load dict_extras %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Junior Subjects Analysis</h2>
+        <span class="text-muted">
+            Class: {{ selected_class.class_name }} {{ selected_class.numeric_name }} {{ selected_class.section }} |
+            Term: {{ term }} | Test: {{ test_type }} | Year: {{ year }}
+        </span>
+    </div>
+
+    <!-- 🔹 Download Excel Button -->
+    <div class="mb-3">
+        <a href="{% url 'download_junior_analysis_excel' %}?class_id={{ selected_class.id }}&term={{ term }}&test_type={{ test_type }}{% for sub in selected_subjects %}&subject_ids={{ sub.id }}{% endfor %}" 
+           class="btn btn-success">
+            <i class="bi bi-file-earmark-excel"></i> Download Excel
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover text-center align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th rowspan="2">Subject</th>
+                    <th colspan="2">Entrants</th>
+                    <th colspan="2">Sat</th>
+                    <th colspan="2">Absent</th>
+                    <th colspan="{{ grades|length }}">Passed – Girls</th>
+                    <th colspan="{{ grades|length }}">Passed – Boys</th>
+                    <th colspan="2">Failed</th>
+                    <th colspan="3">Pass %</th>
+                </tr>
+                <tr>
+                    <th>Girls</th><th>Boys</th>
+                    <th>Girls</th><th>Boys</th>
+                    <th>Girls</th><th>Boys</th>
+
+                    {% for grade in grades %}<th>{{ grade }}</th>{% endfor %}
+                    {% for grade in grades %}<th>{{ grade }}</th>{% endfor %}
+
+                    <th>Girls</th><th>Boys</th>
+                    <th>Girls</th><th>Boys</th><th>Total</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% for subject, data in analysis.items %}
+                <tr>
+                    <td class="fw-bold">{{ subject }}</td>
+
+                    <!-- Entrants -->
+                    <td>{{ data.entrants.Girls }}</td>
+                    <td>{{ data.entrants.Boys }}</td>
+
+                    <!-- Sat -->
+                    <td>{{ data.sat.Girls }}</td>
+                    <td>{{ data.sat.Boys }}</td>
+
+                    <!-- Absent -->
+                    <td>{{ data.absent.Girls }}</td>
+                    <td>{{ data.absent.Boys }}</td>
+
+                    <!-- Passed Girls -->
+                    {% for grade in grades %}
+                        {% with val=data.passed.Girls|get_item:grade %}
+                            <td>
+                                {% if val > 0 %}
+                                    <span class="badge bg-success">{{ val }}</span>
+                                {% else %}
+                                    0
+                                {% endif %}
+                            </td>
+                        {% endwith %}
+                    {% endfor %}
+
+                    <!-- Passed Boys -->
+                    {% for grade in grades %}
+                        {% with val=data.passed.Boys|get_item:grade %}
+                            <td>
+                                {% if val > 0 %}
+                                    <span class="badge bg-success">{{ val }}</span>
+                                {% else %}
+                                    0
+                                {% endif %}
+                            </td>
+                        {% endwith %}
+                    {% endfor %}
+
+                    <!-- Failed -->
+                    <td>{{ data.failed.Girls|default:0 }}</td>
+                    <td>{{ data.failed.Boys|default:0 }}</td>
+
+                    <!-- Pass % -->
+                    {% for key in pass_keys %}
+                        {% with pct=data.pass_percentage|get_item:key %}
+                            {% if pct >= 75 %}
+                                <td class="text-success fw-bold">{{ pct|floatformat:2 }}</td>
+                            {% elif pct >= 50 %}
+                                <td class="text-warning fw-bold">{{ pct|floatformat:2 }}</td>
+                            {% else %}
+                                <td class="text-danger fw-bold">{{ pct|floatformat:2 }}</td>
+                            {% endif %}
+                        {% endwith %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

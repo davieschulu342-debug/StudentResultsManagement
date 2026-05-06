@@ -1,0 +1,119 @@
+{% extends 'admin_base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">
+        <i class="fas fa-edit text-primary"></i> Edit Notice
+    </h2>
+
+    <!-- Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert 
+                {% if message.tags == 'success' %}alert-success
+                {% elif message.tags == 'error' %}alert-danger
+                {% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        <!-- Form Column -->
+        <div class="col-lg-6">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">Title</label>
+                    <input type="text" name="title" class="form-control" value="{{ notice.title }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Details</label>
+                    <textarea name="details" class="form-control" rows="5" required>{{ notice.details }}</textarea>
+                    <small class="text-muted">URLs will be clickable in preview and after saving.</small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Image (optional)</label>
+                    <input type="file" name="image" class="form-control">
+                    {% if notice.image %}
+                        <small class="d-block mt-1">Current: <a href="{{ notice.image.url }}" target="_blank">View Image</a></small>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Attachment (optional)</label>
+                    <input type="file" name="attachment" class="form-control">
+                    {% if notice.attachment %}
+                        <small class="d-block mt-1">Current: <a href="{{ notice.attachment.url }}" target="_blank">View File</a></small>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-check-circle"></i> Update
+                </button>
+                <a href="{% url 'manage_notice' %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </form>
+        </div>
+
+        <!-- Live Preview Column -->
+        <div class="col-lg-6">
+            <h4 class="mb-3 text-center">Live Preview</h4>
+            <div id="preview" class="card p-3 shadow-sm" style="min-height: 250px;">
+                <h5 class="card-title text-primary" id="preview-title">{{ notice.title }}</h5>
+                <p class="card-text" id="preview-details">{{ notice.details|urlize|linebreaksbr }}</p>
+                {% if notice.image %}
+                    <img id="preview-image" src="{{ notice.image.url }}" class="img-fluid mt-2" style="max-height:150px;">
+                {% else %}
+                    <img id="preview-image" class="img-fluid mt-2" style="max-height:150px; display:none;">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Live Preview Script -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const titleInput = document.querySelector('input[name="title"]');
+    const detailsInput = document.querySelector('textarea[name="details"]');
+    const imageInput = document.querySelector('input[name="image"]');
+
+    const previewTitle = document.getElementById('preview-title');
+    const previewDetails = document.getElementById('preview-details');
+    const previewImage = document.getElementById('preview-image');
+
+    function linkify(text) {
+        const urlPattern = /(https?:\/\/[^\s]+)/g;
+        return text.replace(urlPattern, '<a href="$1" target="_blank">$1</a>');
+    }
+
+    function updatePreview() {
+        previewTitle.textContent = titleInput.value || 'Notice Title Here';
+        previewDetails.innerHTML = linkify(detailsInput.value || 'Notice details will appear here...').replace(/\n/g, '<br>');
+    }
+
+    titleInput.addEventListener('input', updatePreview);
+    detailsInput.addEventListener('input', updatePreview);
+
+    // Image preview
+    imageInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            previewImage.src = URL.createObjectURL(file);
+            previewImage.style.display = 'block';
+        } else {
+            previewImage.style.display = 'none';
+        }
+    });
+
+    updatePreview(); // Initial call
+});
+</script>
+
+{% endblock %}

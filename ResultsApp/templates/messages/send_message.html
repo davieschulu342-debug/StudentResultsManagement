@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block top_bar %}{% endblock %}
+{% block main_navbar %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width:600px;">
+    <h3 class="mb-4">Compose Message</h3>
+
+    <form id="sendMessageForm" data-url="{% url 'send_message' %}">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">Recipient</label>
+            <select id="recipient" class="form-select" required>
+                <option value="">Select recipient…</option>
+                {% for user in staff_users %}
+                <option value="{{ user.id }}">
+                    {{ user.get_full_name|default:user.username }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Subject</label>
+            <input type="text" id="subject" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Message</label>
+            <textarea id="body" class="form-control" rows="5" required></textarea>
+        </div>
+
+        <button class="btn btn-primary w-100" type="submit">
+            <i class="fas fa-paper-plane me-1"></i> Send Message
+        </button>
+    </form>
+
+    <div class="mt-4 text-center">
+        <a href="{% url 'inbox' %}">← Back to Inbox</a>
+    </div>
+</div>
+
+<script>
+const form = document.getElementById("sendMessageForm");
+const csrf = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+form.addEventListener("submit", e => {
+    e.preventDefault();
+
+    fetch(form.dataset.url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrf
+        },
+        body: JSON.stringify({
+            recipient: recipient.value,
+            subject: subject.value,
+            body: body.value
+        })
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.success) {
+            alert("Message sent successfully");
+            form.reset();
+        } else {
+            alert(d.error || "Failed to send message");
+        }
+    });
+});
+</script>
+{% endblock %}

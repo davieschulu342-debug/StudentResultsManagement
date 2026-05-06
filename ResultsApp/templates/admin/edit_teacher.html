@@ -1,0 +1,342 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block top_bar %}{% endblock %}
+{% block main_navbar %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-4 text-center text-primary">Edit Teacher: {{ teacher.surname }} {{ teacher.first_name }} {{ teacher.other_names }}</h3>
+
+    <form method="post" enctype="multipart/form-data" class="p-4 bg-white rounded shadow">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <!-- ===== Personal Info ===== -->
+        <h5 class="mb-3 text-primary">Personal Information</h5>
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <label>Surname</label>
+                {{ form.surname|add_class:"form-control" }}
+                {{ form.surname.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>First Name</label>
+                {{ form.first_name|add_class:"form-control" }}
+                {{ form.first_name.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>Other Names</label>
+                {{ form.other_names|add_class:"form-control" }}
+                {{ form.other_names.errors }}
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <label>Gender</label>
+                {{ form.gender|add_class:"form-select" }}
+                {{ form.gender.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>Marital Status</label>
+                {{ form.marital_status|add_class:"form-select" }}
+                {{ form.marital_status.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>Disability</label>
+                {{ form.disability|add_class:"form-select" }}
+                {{ form.disability.errors }}
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <label>Date of Birth</label>
+                {{ form.date_of_birth|add_class:"form-control" }}
+                {{ form.date_of_birth.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>Nationality</label>
+                {{ form.nationality|add_class:"form-control" }}
+                {{ form.nationality.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>Phone Number</label>
+                {{ form.phone_no|add_class:"form-control" }}
+                {{ form.phone_no.errors }}
+            </div>
+        </div>
+
+        <!-- ===== Account Info ===== -->
+        <h5 class="mb-3 text-primary">Account Information</h5>
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label>Email</label>
+                {{ form.email|add_class:"form-control" }}
+                {{ form.email.errors }}
+            </div>
+            <div class="col-md-3">
+                <label>Password (leave blank to keep current)</label>
+                {{ form.password|add_class:"form-control" }}
+                <small id="passwordStrength" class="text-muted"></small>
+                {{ form.password.errors }}
+            </div>
+            <div class="col-md-3">
+                <label>Confirm Password</label>
+                {{ form.confirm_password|add_class:"form-control" }}
+                <small id="passwordMatchAlert" class="text-muted"></small>
+                {{ form.confirm_password.errors }}
+            </div>
+        </div>
+
+        <!-- ===== Employment Info ===== -->
+        <h5 class="mb-3 text-primary">Employment Information</h5>
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <label>Position First Appointment</label>
+                {{ form.position_first_app|add_class:"form-control" }}
+                {{ form.position_first_app.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>Substantive Position</label>
+                {{ form.substantive_position|add_class:"form-control" }}
+                {{ form.substantive_position.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>Current Position</label>
+                {{ form.current_position|add_class:"form-control" }}
+                {{ form.current_position.errors }}
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <label>Confirmed</label>
+                {{ form.confirmed|add_class:"form-select" }}
+                {{ form.confirmed.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>Employment Number</label>
+                {{ form.Employ_No|add_class:"form-control" }}
+                {{ form.Employ_No.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>Departments</label>
+                <div class="row g-2">
+                    <div class="col-6">{{ form.department1|add_class:"form-select" }}</div>
+                    <div class="col-6">{{ form.department2|add_class:"form-select" }}</div>
+                </div>
+                {{ form.department1.errors }} {{ form.department2.errors }}
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <label>Date of First Appointment</label>
+                {{ form.date_first_app|add_class:"form-control" }}
+                {{ form.date_first_app.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>Date of Current Appointment</label>
+                {{ form.date_current_app|add_class:"form-control" }}
+                {{ form.date_current_app.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>Date of Retirement</label>
+                {{ form.date_of_retirement|add_class:"form-control" }}
+                {{ form.date_of_retirement.errors }}
+            </div>
+        </div>
+
+        <!-- ===== Academic & Professional Info ===== -->
+        <h5 class="mb-3 text-primary">Academic & Professional Qualifications</h5>
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <label>Academic Qualification</label>
+                {{ form.academic_qualification|add_class:"form-control" }}
+                {{ form.academic_qualification.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>Professional Qualification</label>
+                {{ form.professional_qualification|add_class:"form-control" }}
+                {{ form.professional_qualification.errors }}
+            </div>
+            <div class="col-md-2">
+                <label>Major</label>
+                {{ form.major|add_class:"form-control" }}
+                {{ form.major.errors }}
+            </div>
+            <div class="col-md-2">
+                <label>Minor</label>
+                {{ form.minor|add_class:"form-control" }}
+                {{ form.minor.errors }}
+            </div>
+        </div>
+
+        <!-- ===== Pay & Station ===== -->
+        <h5 class="mb-3 text-primary">Pay & Station</h5>
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <label>Current Station</label>
+                {{ form.current_station|add_class:"form-control" }}
+                {{ form.current_station.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>Pay Point</label>
+                {{ form.pay_point|add_class:"form-control" }}
+                {{ form.pay_point.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>District of Pay Point</label>
+                {{ form.district_of_pay_point|add_class:"form-control" }}
+                {{ form.district_of_pay_point.errors }}
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <label>Year of Graduation</label>
+                {{ form.year_of_graduation|add_class:"form-control" }}
+                {{ form.year_of_graduation.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>College / University</label>
+                {{ form.college_university|add_class:"form-control" }}
+                {{ form.college_university.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>Salary Scale</label>
+                {{ form.salary_scale|add_class:"form-control" }}
+                {{ form.salary_scale.errors }}
+            </div>
+        </div>
+
+        <!-- ===== Next of Kin ===== -->
+        <h5 class="mb-3 text-primary">Next of Kin</h5>
+        <div class="row g-3 mb-3">
+            <div class="col-md-3">
+                <label>Name</label>
+                {{ form.next_of_kin_name|add_class:"form-control" }}
+                {{ form.next_of_kin_name.errors }}
+            </div>
+            <div class="col-md-3">
+                <label>Phone</label>
+                {{ form.next_of_kin_phone|add_class:"form-control" }}
+                {{ form.next_of_kin_phone.errors }}
+            </div>
+            <div class="col-md-3">
+                <label>Relationship</label>
+                {{ form.next_of_kin_relationship|add_class:"form-select" }}
+                {{ form.next_of_kin_relationship.errors }}
+            </div>
+            <div class="col-md-3">
+                <label>District</label>
+                {{ form.next_of_kin_district|add_class:"form-control" }}
+                {{ form.next_of_kin_district.errors }}
+            </div>
+        </div>
+
+        <!-- ===== Banking Info ===== -->
+        <h5 class="mb-3 text-primary">Banking Information</h5>
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <label>Bank Name</label>
+                {{ form.bank_name|add_class:"form-control" }}
+                {{ form.bank_name.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>Account Number</label>
+                {{ form.account_number|add_class:"form-control" }}
+                {{ form.account_number.errors }}
+            </div>
+            <div class="col-md-4">
+                <label>Branch Name</label>
+                {{ form.branch_name|add_class:"form-control" }}
+                {{ form.branch_name.errors }}
+            </div>
+        </div>
+
+        <!-- ===== Location ===== -->
+        <h5 class="mb-3 text-primary">Location</h5>
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label>District</label>
+                {{ form.district|add_class:"form-control" }}
+                {{ form.district.errors }}
+            </div>
+            <div class="col-md-6">
+                <label>Distance from DEBs (km)</label>
+                {{ form.distance_from_DEBs|add_class:"form-control" }}
+                {{ form.distance_from_DEBs.errors }}
+            </div>
+        </div>
+
+        <!-- ===== Photo ===== -->
+        <div class="row g-3 mb-3 align-items-center">
+            <div class="col-md-12 text-center">
+                <label>Photo</label><br>
+                {% if teacher.photo %}
+                    <img id="photoPreview" src="{{ teacher.photo.url }}" alt="Teacher Photo"
+                         class="rounded-circle border mb-2"
+                         style="width:100px; height:100px; object-fit:cover;">
+                {% else %}
+                    <img id="photoPreview" src="{% static 'images/default-avatar.png' %}" alt="No Photo"
+                         class="rounded-circle border mb-2"
+                         style="width:100px; height:100px; object-fit:cover;">
+                {% endif %}
+                <input type="file" name="photo" id="id_photo" class="form-control mt-2" accept="image/*">
+            </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="mt-4 text-center">
+            <button type="submit" class="btn btn-primary">Update Teacher</button>
+            <a href="{% url 'manage_teachers' %}" class="btn btn-secondary ms-2">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const photoInput = document.getElementById('id_photo');
+    const photoPreview = document.getElementById('photoPreview');
+    photoInput.addEventListener('change', function(e) {
+        const [file] = e.target.files;
+        if (file) photoPreview.src = URL.createObjectURL(file);
+    });
+
+    // Password strength & match indicators
+    const password = document.getElementById('id_password');
+    const confirmPassword = document.getElementById('id_confirm_password');
+    const strengthDiv = document.getElementById('passwordStrength');
+    const matchDiv = document.getElementById('passwordMatchAlert');
+
+    const checkStrength = (pass) => {
+        let strength = 0;
+        if(pass.length >= 6) strength++;
+        if(pass.match(/[A-Z]/)) strength++;
+        if(pass.match(/[0-9]/)) strength++;
+        if(pass.match(/[\W]/)) strength++;
+
+        switch(strength){
+            case 0:
+            case 1: strengthDiv.textContent = "Weak"; strengthDiv.style.color = "red"; break;
+            case 2: strengthDiv.textContent = "Medium"; strengthDiv.style.color = "orange"; break;
+            case 3:
+            case 4: strengthDiv.textContent = "Strong"; strengthDiv.style.color = "green"; break;
+        }
+    };
+
+    const checkMatch = () => {
+        if(confirmPassword.value === "") { matchDiv.textContent = ""; return; }
+        matchDiv.textContent = password.value === confirmPassword.value ? "Passwords match" : "Passwords do not match!";
+        matchDiv.style.color = password.value === confirmPassword.value ? "green" : "red";
+    };
+
+    password.addEventListener('input', () => { checkStrength(password.value); checkMatch(); });
+    confirmPassword.addEventListener('input', checkMatch);
+});
+</script>
+{% endblock %}

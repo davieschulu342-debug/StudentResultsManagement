@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+<style>
+    body { background:#f0f2f5; font-family:'Segoe UI', sans-serif; }
+    .register-container { max-width:950px; margin:50px auto; background:#fff; border-radius:12px; padding:40px; box-shadow:0 8px 20px rgba(0,0,0,0.1); }
+    h2 { text-align:center; margin-bottom:30px; color:#0d6efd; }
+    label { font-weight:600; margin-bottom:5px; display:block; }
+    .form-control, .form-select { border:none; border-radius:8px; padding:12px; background: linear-gradient(90deg, #e0f7fa, #fff9c4); transition: all 0.3s ease; box-shadow: inset 0 0 5px rgba(0,0,0,0.05); }
+    .form-control:focus, .form-select:focus { outline:none; background: linear-gradient(90deg, #b2ebf2, #fff59d); box-shadow: 0 0 8px rgba(13,110,253,0.3); }
+    .row { margin-bottom:15px; }
+    #password-strength { height:8px; width:0; border-radius:4px; margin-top:5px; transition:width 0.3s ease; }
+    #password-match { margin-top:5px; font-size:0.9em; color:red; }
+    button { background:#0d6efd; color:white; border:none; padding:14px; width:100%; border-radius:8px; font-size:1.1em; cursor:pointer; transition:background 0.3s; }
+    button:hover { background:#0056b3; }
+</style>
+
+<div class="register-container">
+    <h2>Teacher Registration</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} text-center">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- TWO COLUMN LAYOUT -->
+        <div class="row">
+            <div class="col-md-6">
+                <label>{{ form.teacher_name.label }}</label>
+                {{ form.teacher_name|add_class:"form-control" }}
+                {% if form.teacher_name.errors %}<div class="text-danger small">{{ form.teacher_name.errors|striptags }}</div>{% endif %}
+
+                <label>{{ form.gender.label }}</label>
+                {{ form.gender|add_class:"form-select" }}
+                {% if form.gender.errors %}<div class="text-danger small">{{ form.gender.errors|striptags }}</div>{% endif %}
+
+                <label>{{ form.marital_status.label }}</label>
+                {{ form.marital_status|add_class:"form-select" }}
+                {% if form.marital_status.errors %}<div class="text-danger small">{{ form.marital_status.errors|striptags }}</div>{% endif %}
+
+                <label>{{ form.phone_no.label }}</label>
+                {{ form.phone_no|add_class:"form-control" }}
+                {% if form.phone_no.errors %}<div class="text-danger small">{{ form.phone_no.errors|striptags }}</div>{% endif %}
+
+                <label>{{ form.department1.label }}</label>
+                {{ form.department1|add_class:"form-select" }}
+                {% if form.department1.errors %}<div class="text-danger small">{{ form.department1.errors|striptags }}</div>{% endif %}
+
+                <label>{{ form.department2.label }}</label>
+                {{ form.department2|add_class:"form-select" }}
+                {% if form.department2.errors %}<div class="text-danger small">{{ form.department2.errors|striptags }}</div>{% endif %}
+
+                <label>{{ form.academic_qualification.label }}</label>
+                {{ form.academic_qualification|add_class:"form-control" }}
+                {% if form.academic_qualification.errors %}<div class="text-danger small">{{ form.academic_qualification.errors|striptags }}</div>{% endif %}
+  
+                <label>{{ form.TS_No.label }}</label>
+                {{ form.TS_No|add_class:"form-control" }}
+                {% if form.TS_No.errors %}<div class="text-danger small">{{ form.TS_No.errors|striptags }}</div>{% endif %}
+ 
+                 <label>{{ form.Employ_No.label }}</label>
+                {{ form.Employ_No|add_class:"form-control" }}
+                {% if form.Employ_No.errors %}<div class="text-danger small">{{ form.Employ_No.errors|striptags }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+                <label>{{ form.professional_qualification.label }}</label>
+                {{ form.professional_qualification|add_class:"form-control" }}
+                {% if form.professional_qualification.errors %}<div class="text-danger small">{{ form.professional_qualification.errors|striptags }}</div>{% endif %}
+
+                <label>{{ form.major.label }}</label>
+                {{ form.major|add_class:"form-control" }}
+                {% if form.major.errors %}<div class="text-danger small">{{ form.major.errors|striptags }}</div>{% endif %}
+
+                <label>{{ form.minor.label }}</label>
+                {{ form.minor|add_class:"form-control" }}
+                {% if form.minor.errors %}<div class="text-danger small">{{ form.minor.errors|striptags }}</div>{% endif %}
+
+                <label>{{ form.date_first_app.label }}</label>
+                {{ form.date_first_app|add_class:"form-control" }}
+                {% if form.date_first_app.errors %}<div class="text-danger small">{{ form.date_first_app.errors|striptags }}</div>{% endif %}
+
+                <label>{{ form.date_current_app.label }}</label>
+                {{ form.date_current_app|add_class:"form-control" }}
+                {% if form.date_current_app.errors %}<div class="text-danger small">{{ form.date_current_app.errors|striptags }}</div>{% endif %}
+
+                <label>{{ form.date_of_retirement.label }}</label>
+                {{ form.date_of_retirement|add_class:"form-control" }}
+                {% if form.date_of_retirement.errors %}<div class="text-danger small">{{ form.date_of_retirement.errors|striptags }}</div>{% endif %}
+
+                <label>{{ form.NRC_No.label }}</label>
+                {{ form.NRC_No|add_class:"form-control" }}
+                {% if form.NRC_No.errors %}<div class="text-danger small">{{ form.NRC_No.errors|striptags }}</div>{% endif %}
+
+                <label>{{ form.TCZ_No.label }}</label>
+                {{ form.TCZ_No|add_class:"form-control" }}
+                {% if form.TCZ_No.errors %}<div class="text-danger small">{{ form.TCZ_No.errors|striptags }}</div>{% endif %}
+
+                <label>{{ form.disability.label }}</label>
+                {{ form.disability|add_class:"form-control" }}
+                {% if form.disability.errors %}<div class="text-danger small">{{ form.disability.errors|striptags }}</div>{% endif %}
+            </div>
+        </div>
+
+        <!-- PASSWORD FIELDS -->
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <label>{{ form.password.label }}</label>
+                {{ form.password|add_class:"form-control" }}
+                <div id="password-strength"></div>
+                {% if form.password.errors %}<div class="text-danger small">{{ form.password.errors|striptags }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+                <label>{{ form.confirm_password.label }}</label>
+                {{ form.confirm_password|add_class:"form-control" }}
+                <div id="password-match"></div>
+                {% if form.confirm_password.errors %}<div class="text-danger small">{{ form.confirm_password.errors|striptags }}</div>{% endif %}
+            </div>
+        </div>
+
+        <button type="submit" class="mt-4">Register Teacher</button>
+    </form>
+</div>
+
+<script>
+const password = document.getElementById('id_password');
+const confirm = document.getElementById('id_confirm_password');
+const strengthBar = document.getElementById('password-strength');
+const matchMsg = document.getElementById('password-match');
+
+function checkStrength(pw) {
+    let strength = 0;
+    if (pw.length >= 6) strength++;
+    if (/[A-Z]/.test(pw)) strength++;
+    if (/[0-9]/.test(pw)) strength++;
+    if (/[\W]/.test(pw)) strength++;
+
+    if (strength <= 1) { strengthBar.style.background='red'; strengthBar.style.width='50px'; }
+    else if (strength == 2) { strengthBar.style.background='orange'; strengthBar.style.width='100px'; }
+    else if (strength == 3) { strengthBar.style.background='yellowgreen'; strengthBar.style.width='150px'; }
+    else { strengthBar.style.background='green'; strengthBar.style.width='200px'; }
+}
+
+password.addEventListener('input', () => {
+    checkStrength(password.value);
+    matchMsg.textContent = (password.value !== confirm.value) ? "Passwords do not match" : "Passwords match";
+    matchMsg.style.color = (password.value !== confirm.value) ? "red" : "green";
+});
+
+confirm.addEventListener('input', () => {
+    matchMsg.textContent = (password.value !== confirm.value) ? "Passwords do not match" : "Passwords match";
+    matchMsg.style.color = (password.value !== confirm.value) ? "red" : "green";
+});
+</script>
+{% endblock %}

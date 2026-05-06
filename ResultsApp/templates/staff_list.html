@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block top_bar %}{% endblock %}
+{% block main_navbar %}{% endblock %}
+{% block content %}
+<div class="container mt-1">
+    <h2 class="mb-4 text-center text-primary">Staff Return</h2>
+
+    <div class="mb-3 text-end">
+        <a href="{% url 'staff_list_excel' %}" class="btn btn-success me-2">Download Excel</a>
+        <a href="{% url 'staff_list_pdf' %}" class="btn btn-primary">Download PDF</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover align-middle table-sm">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>S/No</th>
+                    <th>Photo</th>
+                    <th>Staff Name</th>
+                    <th>Email</th>
+                    <th>Gender</th>
+                    <th>Marital Status</th>
+                    <th>Phone</th>
+                    <th>Department 1</th>
+                    <th>Department 2</th>
+                    <th>Position First App</th>
+                    <th>Substantive Position</th>
+                    <th>Current Position</th>
+                    <th>Confirmed</th>
+                    <th>Academic Qualification</th>
+                    <th>Professional Qualification</th>
+                    <th>Major</th>
+                    <th>Minor</th>
+                    <th>College/University</th>
+                    <th>Year of Graduation</th>
+                    <th>Date First Appointment</th>
+                    <th>Date Current Appointment</th>
+                    <th>Date of Retirement</th>
+                    <th>NRC</th>
+                    <th>TCZ</th>
+                    <th>TS</th>
+                    <th>Employ No</th>
+                    <th>Disability</th>
+                    <th>Next of Kin Name</th>
+                    <th>Next of Kin Phone</th>
+                    <th>Relationship</th>
+                    <th>Next of Kin District</th>
+                    <th>Bank Name</th>
+                    <th>Account Number</th>
+                    <th>Branch Name</th>
+                    <th>Current Station</th>
+                    <th>District</th>
+                    <th>Distance from DEBs (km)</th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                {% for teacher in teachers %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+
+                    <!-- Photo -->
+                    <td>
+                        {% if teacher.photo %}
+                            <img src="{{ teacher.photo.url }}" alt="Photo" class="rounded-circle" style="width:50px; height:50px; object-fit:cover;">
+                        {% else %}
+                            <img src="{% static 'images/default-avatar.png' %}" alt="No Photo" class="rounded-circle" style="width:50px; height:50px; object-fit:cover;">
+                        {% endif %}
+                    </td>
+
+                    <!-- Personal Info -->
+                    <td>{{ teacher.surname }} {{ teacher.first_name }} {{ teacher.other_names|default:"" }}</td>
+                    <td>{{ teacher.user.email|default:"-" }}</td>
+                    <td>{{ teacher.gender|default:"-" }}</td>
+                    <td>{{ teacher.marital_status|default:"-" }}</td>
+                    <td>{{ teacher.phone_no|default:"-" }}</td>
+
+                    <!-- Departments -->
+                    <td>{% if teacher.department1 %}{{ teacher.department1.department_name|default:"-" }}{% else %}-{% endif %}</td>
+                    <td>{% if teacher.department2 %}{{ teacher.department2.department_name|default:"-" }}{% else %}-{% endif %}</td>
+
+                    <!-- Employment Info -->
+                    <td>{{ teacher.position_first_app|default:"-" }}</td>
+                    <td>{{ teacher.substantive_position|default:"-" }}</td>
+                    <td>{{ teacher.current_position|default:"-" }}</td>
+                    <td>{{ teacher.confirmed|default:"-" }}</td>
+
+                    <!-- Academic & Professional Info -->
+                    <td>{{ teacher.academic_qualification|default:"-" }}</td>
+                    <td>{{ teacher.professional_qualification|default:"-" }}</td>
+                    <td>{{ teacher.major|default:"-" }}</td>
+                    <td>{{ teacher.minor|default:"-" }}</td>
+                    <td>{{ teacher.college_university|default:"-" }}</td>
+                    <td>{{ teacher.year_of_graduation|default:"-" }}</td>
+
+                    <!-- Dates -->
+                    <td>{% if teacher.date_first_app %}{{ teacher.date_first_app|date:"d-m-Y" }}{% else %}-{% endif %}</td>
+                    <td>{% if teacher.date_current_app %}{{ teacher.date_current_app|date:"d-m-Y" }}{% else %}-{% endif %}</td>
+                    <td>{% if teacher.date_of_retirement %}{{ teacher.date_of_retirement|date:"d-m-Y" }}{% else %}-{% endif %}</td>
+
+                    <!-- IDs -->
+                    <td>{{ teacher.NRC_No|default:"-" }}</td>
+                    <td>{{ teacher.TCZ_No|default:"-" }}</td>
+                    <td>{{ teacher.TS_No|default:"-" }}</td>
+                    <td>{{ teacher.Employ_No|default:"-" }}</td>
+                    <td>{{ teacher.disability|default:"-" }}</td>
+
+                    <!-- Next of Kin -->
+                    <td>{{ teacher.next_of_kin_name|default:"-" }}</td>
+                    <td>{{ teacher.next_of_kin_phone|default:"-" }}</td>
+                    <td>{{ teacher.next_of_kin_relationship|default:"-" }}</td>
+                    <td>{{ teacher.next_of_kin_district|default:"-" }}</td>
+
+                    <!-- Banking Info -->
+                    <td>{{ teacher.bank_name|default:"-" }}</td>
+                    <td>{{ teacher.account_number|default:"-" }}</td>
+                    <td>{{ teacher.branch_name|default:"-" }}</td>
+
+                    <!-- Location -->
+                    <td>{{ teacher.current_station|default:"-" }}</td>
+                    <td>{{ teacher.district|default:"-" }}</td>
+                    <td>{{ teacher.distance_from_DEBs|default:"-" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="38" class="text-center">No staff found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    table th,
+    table td {
+        white-space: nowrap;
+        vertical-align: middle;
+        font-size: 12.5px;
+    }
+
+    table th {
+        text-align: center;
+    }
+
+    @media (max-width: 1400px) {
+        table {
+            font-size: 11.5px;
+        }
+    }
+</style>
+{% endblock %}

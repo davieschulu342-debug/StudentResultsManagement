@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h4 {
+            margin: 2px;
+        }
+
+        .info {
+            margin-bottom: 15px;
+        }
+
+        .info div {
+            margin-bottom: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th {
+            text-align: center;
+            padding: 5px;
+        }
+
+        td {
+            height: 60px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h4>MINISTRY OF EDUCATION</h4>
+    <h3>MUYOMBE DAY SECONDARY SCHOOL</h3>
+    <h4>RECORDS OF WORK</h4>
+</div>
+
+<div class="info">
+    <div>
+        <strong>Teacher:</strong> {{ teacher }}
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <strong>Subject:</strong> {{ subject }}
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <strong>Year:</strong> {{ year }}
+    </div>
+
+    <div>
+        <strong>Term:</strong> {{ term }}
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <strong>Grade:</strong> {{ grade }}
+    </div>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Week</th>
+            <th>Work Done</th>
+            <th>Work Not Done</th>
+            <th>Teacher's Comments</th>
+            <th>H.O.D Remarks</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in records %}
+        <tr>
+            <td>{{ r.week }}</td>
+            <td>{{ r.work_done }}</td>
+            <td>{{ r.work_not_done }}</td>
+            <td>{{ r.teacher_comments }}</td>
+            <td>{{ r.hod_remarks }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>

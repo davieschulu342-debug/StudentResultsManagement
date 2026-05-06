@@ -1,0 +1,366 @@
+{% load static %}
+<style>
+    /* ===== MODERN SIDEBAR ===== */
+    .sidebar {
+        min-height: 100vh;
+        max-height: 100vh;
+        overflow-y: auto;
+        background: linear-gradient(180deg, #0b5ed7, #021a40);
+        box-shadow: 6px 0 25px rgba(0, 0, 0, 0.35);
+        padding: 1rem 0.5rem;
+    }
+
+    /* Scrollbar */
+    .sidebar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.25);
+        border-radius: 10px;
+    }
+
+    /* Nav links */
+    .sidebar .nav-link {
+        color: #e9ecef;
+        padding: 0.7rem 1rem;
+        margin: 0.2rem 0.4rem;
+        border-radius: 0.75rem;
+        font-size: 0.92rem;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        transition: all 0.25s ease;
+    }
+
+    /* Left icons */
+    .sidebar .nav-link i:first-child {
+        color: #ffc107;
+        width: 22px;
+        margin-right: 0.7rem;
+    }
+
+    /* Hover */
+    .sidebar .nav-link:hover {
+        background: rgba(255, 255, 255, 0.18);
+        transform: translateX(5px);
+    }
+
+    /* Active */
+    .sidebar .nav-link.active {
+        background: rgba(255, 255, 255, 0.28);
+        box-shadow: inset 4px 0 0 #ffc107;
+        font-weight: 600;
+    }
+
+    /* ===== FIX NESTED MENU ALIGNMENT ===== */
+    .sidebar .collapse .nav-link {
+        background: rgba(255, 255, 255, 0.08);
+        margin-left: 1rem;
+        /* indent from LEFT */
+        padding-left: 0.75rem;
+        /* space between icon & text */
+        font-size: 0.88rem;
+    }
+
+    /* Nested hover */
+    .sidebar .collapse .nav-link:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Chevron */
+    .sidebar .fa-chevron-down {
+        font-size: 0.7rem;
+        transition: transform 0.25s ease;
+    }
+
+    /* Rotate chevron */
+    .sidebar .nav-link[aria-expanded="true"] .fa-chevron-down {
+        transform: rotate(180deg);
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+        .sidebar {
+            position: static;
+            height: auto;
+        }
+    }
+
+    /* ===== UNIFORM ICON SPACING FIX ===== */
+    .sidebar .nav-link span {
+        display: flex;
+        align-items: center;
+    }
+
+    .sidebar .nav-link i {
+        min-width: 22px;
+        /* forces alignment */
+        margin-right: 0.75rem;
+        /* consistent spacing */
+        text-align: center;
+    }
+
+    /* Right-side chevrons */
+    .sidebar .nav-link>.fa-chevron-down {
+        margin-left: auto;
+        margin-right: 0;
+    }
+
+    /* Nested menu icons slightly smaller */
+    .sidebar .collapse .nav-link i {
+        font-size: 0.85rem;
+    }
+</style>
+
+<nav class="col-md-3 col-lg-3 sidebar bg-dark collapse d-md-block">
+    <ul class="nav flex-column">
+
+        <!-- Dashboard -->
+        <li class="nav-item">
+            <a href="{% url 'admin_dashboard' %}" class="nav-link">
+                <span><i class="fas fa-tachometer-alt"></i> Dashboard</span>
+            </a>
+        </li>
+
+        <!-- Classes -->
+        <li class="nav-item">
+            <a href="#ClassesMenu" data-bs-toggle="collapse" class="nav-link">
+                <span><i class="fas fa-chalkboard"></i>Classes</span>
+                <i class="fas fa-chevron-down"></i>
+            </a>
+            <div id="ClassesMenu" class="collapse">
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item"><a href="{% url 'create_class' %}" class="nav-link"><i
+                                class="fas fa-plus-circle"></i>Create Class</a></li>
+                    <li class="nav-item"><a href="{% url 'manage_classes' %}" class="nav-link"><i
+                                class="fas fa-table"></i>Manage Class</a></li>
+                </ul>
+            </div>
+        </li>
+
+        <!-- Subjects -->
+        <li class="nav-item">
+            <a href="#SubjectMenu" data-bs-toggle="collapse" class="nav-link">
+                <span><i class="fas fa-book"></i>Subjects</span>
+                <i class="fas fa-chevron-down"></i>
+            </a>
+            <div id="SubjectMenu" class="collapse">
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item"><a href="{% url 'create_subject' %}" class="nav-link"><i
+                                class="fas fa-plus-circle"></i>Create Subjects</a></li>
+                    <li class="nav-item"><a href="{% url 'manage_subjects' %}" class="nav-link"><i
+                                class="fas fa-list"></i>Manage Subjects</a></li>
+                    <li class="nav-item"><a href="{% url 'add_subject_combination' %}" class="nav-link"><i
+                                class="fas fa-layer-group"></i>Add Subject Combination</a></li>
+                    <li class="nav-item"><a href="{% url 'manage_subject_combination' %}" class="nav-link"><i
+                                class="fas fa-layer-group"></i>Manage Subject Combination</a></li>
+                </ul>
+            </div>
+        </li>
+
+        <!-- Students -->
+        <li class="nav-item">
+            <a href="#studentMenu" data-bs-toggle="collapse" class="nav-link">
+                <span><i class="fas fa-user-graduate"></i>Students</span>
+                <i class="fas fa-chevron-down"></i>
+            </a>
+            <div id="studentMenu" class="collapse">
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item"><a href="{% url 'add_student' %}" class="nav-link"><i
+                                class="fas fa-plus-circle"></i>Add Student</a></li>
+                    <li class="nav-item"><a href="{% url 'manage_students' %}" class="nav-link"><i
+                                class="fas fa-list"></i>Manage Student</a></li>
+                </ul>
+            </div>
+        </li>
+
+        <!-- Results -->
+        <li class="nav-item">
+            <a href="#resultsMenu" data-bs-toggle="collapse" class="nav-link">
+                <span><i class="fas fa-clipboard-list"></i>Results</span>
+                <i class="fas fa-chevron-down"></i>
+            </a>
+            <div id="resultsMenu" class="collapse">
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item"><a href="{% url 'add_result' %}" class="nav-link"><i
+                                class="fas fa-plus-circle"></i>Add Results</a></li>
+                    <li class="nav-item"><a href="{% url 'manage_results' %}" class="nav-link"><i
+                                class="fas fa-list"></i>Manage Results</a></li>
+                </ul>
+            </div>
+        </li>
+
+        <!-- SBA -->
+        <li class="nav-item">
+            <a href="#sbaMenu" data-bs-toggle="collapse" class="nav-link">
+                <span><i class="fas fa-pen-clip"></i>SBA</span>
+                <i class="fas fa-chevron-down"></i>
+            </a>
+            <div id="sbaMenu" class="collapse">
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-plus-circle"></i>Add SBA</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-clipboard-check"></i>Manage
+                            SBA</a></li>
+                </ul>
+            </div>
+        </li>
+
+        <!-- Schedule of Activities -->
+        <li class="nav-item">
+            <a href="#scheduleMenu" data-bs-toggle="collapse" class="nav-link">
+                <span><i class="fas fa-calendar-check"></i>Schedule of Activities</span>
+                <i class="fas fa-chevron-down"></i>
+            </a>
+            <div id="scheduleMenu" class="collapse">
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-table"></i>Class Timetable</a>
+                    </li>
+                    <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-file-alt"></i>Exam Timetable</a>
+                    </li>
+                    <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-chalkboard-teacher"></i>Teacher
+                            Schedule</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-user-clock"></i>Student
+                            Activities</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-calendar-star"></i>School
+                            Events</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-futbol"></i>Sports & Clubs</a>
+                    </li>
+                    <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-calendar-alt"></i>Academic
+                            Calendar</a></li>
+                </ul>
+            </div>
+        </li>
+
+        <!-- Teachers -->
+        <li class="nav-item">
+            <a href="#teacherMenu" data-bs-toggle="collapse" class="nav-link">
+                <span><i class="fas fa-chalkboard-user"></i>Teachers</span>
+                <i class="fas fa-chevron-down"></i>
+            </a>
+            <div id="teacherMenu" class="collapse">
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item"><a href="{% url 'add_teacher' %}" class="nav-link"><i
+                                class="fas fa-plus-circle"></i>Add Teachers</a></li>
+                    <li class="nav-item"><a href="{% url 'manage_teachers' %}" class="nav-link"><i
+                                class="fas fa-list"></i>Manage Teachers</a></li>
+                    <!-- NEW: Assign Classes/Subjects -->
+                    <li class="nav-item"><a href="{% url 'assign_classes_subjects'%}" class="nav-link"><i
+                                class="fas fa-tasks"></i>Assign Classes/Subjects</a></li>
+                </ul>
+            </div>
+        </li>
+
+
+        <!-- Department -->
+        <li class="nav-item">
+            <a href="#departmentMenu" data-bs-toggle="collapse" class="nav-link">
+                <span><i class="fas fa-building-user"></i>Department</span>
+                <i class="fas fa-chevron-down"></i>
+            </a>
+            <div id="departmentMenu" class="collapse">
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item"><a href="{% url 'add_department' %}" class="nav-link"><i
+                                class="fas fa-plus-circle"></i>Add Department</a></li>
+                    <li class="nav-item"><a href="{% url 'manage_departments' %}" class="nav-link"><i
+                                class="fas fa-list"></i>Manage Department</a></li>
+                </ul>
+            </div>
+        </li>
+
+        <!-- Downloads -->
+        <li class="nav-item">
+            <a href="#downloadsMenu" data-bs-toggle="collapse" class="nav-link">
+                <span><i class="fas fa-download"></i>Downloads</span>
+                <i class="fas fa-chevron-down"></i>
+            </a>
+            <div id="downloadsMenu" class="collapse">
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item"><a href="{% url 'class_list_view' %}" class="nav-link"><i
+                                class="fas fa-users"></i>Class Lists</a></li>
+                    <li class="nav-item"><a href="{% url 'mark_schedule' %}" class="nav-link"><i
+                                class="fas fa-file-lines"></i>Mark Schedule</a></li>
+
+                    <!-- Results Analysis with sub-menu -->
+                    <li class="nav-item">
+                        <a href="#resultsAnalysisMenu" data-bs-toggle="collapse" class="nav-link">
+                            <i class="fas fa-chart-column"></i>Results Analysis
+                            <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <div id="resultsAnalysisMenu" class="collapse">
+                            <ul class="nav flex-column ms-3">
+                                <li class="nav-item"><a href="{% url 'senior_analysis_results'%}" class="nav-link"><i
+                                            class="fas fa-angle-right"></i>Senior Analysis</a></li>
+                                <li class="nav-item"><a href="{% url 'junior_analysis_results'%}" class="nav-link"><i
+                                            class="fas fa-angle-right"></i>Junior Analysis</a></li>
+                                <li class="nav-item"><a href="#" class="nav-link"><i
+                                            class="fas fa-angle-right"></i>Upper Primary Analysis</a></li>
+                                <li class="nav-item"><a href="#" class="nav-link"><i
+                                            class="fas fa-angle-right"></i>Lower Primary Analysis</a></li>
+                                <li class="nav-item"><a href="#" class="nav-link"><i
+                                            class="fas fa-angle-right"></i>ECE</a></li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="nav-item"><a href="{% url 'staff_list' %}" class="nav-link"><i
+                                class="fas fa-user-tie"></i>Staff Return</a></li>
+                    <li class="nav-item"><a href="{% url 'report_form_select_class' %}" class="nav-link"><i
+                                class="fas fa-file-pdf"></i>Report Forms</a></li>
+                </ul>
+            </div>
+        </li>
+
+        <!-- Notices -->
+        <li class="nav-item">
+            <a href="#noticeMenu" data-bs-toggle="collapse" class="nav-link">
+                <span><i class="fas fa-bullhorn"></i>Notices</span>
+                <i class="fas fa-chevron-down"></i>
+            </a>
+            <div id="noticeMenu" class="collapse">
+                <ul class="nav flex-column ms-3">
+                    <li class="nav-item"><a href="{% url 'add_notice' %}" class="nav-link"><i
+                                class="fas fa-plus-circle"></i>Add Notice</a></li>
+                    <li class="nav-item"><a href="{% url 'manage_notice' %}" class="nav-link"><i
+                                class="fas fa-list"></i>Manage Notice</a></li>
+                </ul>
+            </div>
+        </li>
+
+        <!-- Change Password -->
+        <li class="nav-item">
+    <a href="#" class="nav-link">
+        <span><i class="fas fa-key"></i>Change Password</span>
+    </a>
+</li>
+
+
+    </ul>
+</nav>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const currentPath = window.location.pathname;
+
+        document.querySelectorAll(".sidebar .nav-link").forEach(link => {
+            const href = link.getAttribute("href");
+
+            if (href && currentPath === href) {
+                link.classList.add("active");
+
+                const collapse = link.closest(".collapse");
+                if (collapse) {
+                    collapse.classList.add("show");
+
+                    const parentToggle = document.querySelector(
+                        `[href="#${collapse.id}"]`
+                    );
+                    if (parentToggle) {
+                        parentToggle.classList.add("active");
+                        parentToggle.setAttribute("aria-expanded", "true");
+                    }
+                }
+            }
+        });
+    });
+</script>

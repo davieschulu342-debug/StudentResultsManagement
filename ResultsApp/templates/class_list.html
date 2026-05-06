@@ -1,0 +1,242 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class List</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        h3 {
+            color: #343a40;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .card {
+            margin-bottom: 20px;
+            padding: 15px;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+
+        .form-label {
+            font-weight: 600;
+        }
+
+        .table thead th {
+            text-align: center;
+            background-color: #007bff;
+            color: white;
+        }
+
+        .top-details .form-control {
+            background-color: #e9ecef;
+            font-weight: 500;
+        }
+
+        .top-details .row {
+            margin: 0;
+        }
+
+        .top-details .col-md-4 {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+
+        /* Center table wrapper */
+        .table-wrapper {
+            display: flex;
+            justify-content: center;
+        }
+
+        #studentsTable {
+            width: 90% !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+            <a href="{{ back_url }}" class="btn btn-secondary mb-3">
+    <i class="fas fa-arrow-left"></i> Back
+</a>
+
+        </div>
+    <div class="container-fluid mt-4">
+        <h3>Class List</h3>
+
+        <!-- Top Details -->
+        <div class="card top-details">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">Select Class</label>
+                    <select id="classSelect" class="form-select">
+                        <option value="">-- Select Class --</option>
+                        {% for cls in classes %}
+                        <option value="{{ cls.id }}">{{ cls.class_name }} {{ cls.numeric_name }} {{ cls.section }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Intake</label>
+                    <input type="text" id="session" class="form-control" readonly>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Academic Year</label>
+                    <input type="text" id="year" class="form-control" readonly>
+                </div>
+            </div>
+        </div>
+
+        <!-- Students Table -->
+        <div class="card table-wrapper">
+            <div class="card-body">
+                <table id="studentsTable" class="table table-striped table-bordered display nowrap text-center">
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Student Name</th>
+                            <th>Gender</th>
+                            <th>Disability</th>
+                            <th>Address</th>
+                            <th>Exam Number</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS Libraries -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+    <script>
+        let schoolLogo = '';
+        let ministryLogo = '';
+
+        function loadLogo(url, callback) {
+            fetch(url)
+                .then(res => res.blob())
+                .then(blob => {
+                    const reader = new FileReader();
+                    reader.onloadend = function () {
+                        callback(reader.result.split(',')[1]);
+                    }
+                    reader.readAsDataURL(blob);
+                });
+        }
+
+        loadLogo("{% static 'images/logo.png' %}", b64 => schoolLogo = b64);
+        loadLogo("{% static 'images/ministry_logo.png' %}", b64 => ministryLogo = b64);
+
+        let table;
+
+        $('#classSelect').change(function () {
+            const classId = $(this).val();
+            if (!classId) return;
+
+            $.ajax({
+                url: "{% url 'get_class_details' %}",
+                data: { 'class_id': classId },
+                success: function (data) {
+                    $('#session').val(data.session);
+                    $('#year').val(data.year);
+
+                    if ($.fn.DataTable.isDataTable('#studentsTable')) {
+                        table.destroy();
+                    }
+
+                    let tbody = '';
+                    data.students.forEach(s => {
+                        tbody += `<tr>
+                            <td>${s.s_no}</td>
+                            <td>${s.student_name}</td>
+                            <td>${s.gender}</td>
+                            <td>${s.disability}</td>
+                            <td>${s.address}</td>
+                            <td>${s.exam_no}</td>
+                        </tr>`;
+                    });
+                    $('#studentsTable tbody').html(tbody);
+
+                    table = $('#studentsTable').DataTable({
+                        dom: 'Bfrtip',
+                        buttons: [
+                            {
+                                extend: 'pdfHtml5',
+                                title: "",
+                                messageTop: "",
+                                pageSize: 'A4',
+                                orientation: 'portrait',
+                                customize: function (doc) {
+                                    doc.pageMargins = [50, 100, 40, 40];
+
+                                    // Header with School logo (left), School Name (center), Ministry logo (right)
+                                    doc.header = function () {
+                                        return {
+                                            columns: [
+                                                { image: 'data:image/png;base64,' + schoolLogo, width: 60 },
+                                                { text: 'Muyombe Day Secondary School', alignment: 'center', fontSize: 16, bold: true },
+                                                { image: 'data:image/png;base64,' + ministryLogo, width: 45, alignment: 'right' }
+                                            ],
+                                            margin: [25, 30, 25, 10]
+                                        };
+                                    };
+
+                                    doc.footer = function (currentPage, pageCount) {
+                                        return { text: 'Page ' + currentPage + ' of ' + pageCount, alignment: 'right', margin: [0, 0, 40, 0] };
+                                    };
+
+                                    // Class info
+                                    doc.content.splice(0, 0,
+                                        { text: `Class List: ${data.full_class_name}`, fontSize: 14, bold: true, alignment: 'center', margin: [0, 0, 0, 5] },
+                                        { text: `Session: ${data.session} | Academic Year: ${data.year}`, fontSize: 12, italics: true, alignment: 'center', margin: [0, 0, 0, 10] }
+                                    );
+
+                                    doc.styles.tableHeader.fillColor = '#007bff';
+                                    doc.styles.tableHeader.color = 'white';
+                                    doc.styles.tableHeader.alignment = 'center';
+                                    doc.defaultStyle.fontSize = 10;
+                                }
+                            },
+                            { extend: 'copyHtml5', title: `Class List: ${data.full_class_name}` },
+                            { extend: 'excelHtml5', title: `Class List: ${data.full_class_name}` },
+                            { extend: 'csvHtml5', title: `Class List: ${data.full_class_name}` },
+                            { extend: 'print', title: `Class List: ${data.full_class_name}` }
+                        ],
+                        responsive: true,
+                        paging: true,
+                        pageLength: 25
+                    });
+                },
+                error: function () {
+                    alert('Failed to fetch class details.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

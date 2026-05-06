@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Send Message</h3>
+
+<p>Total users: {{ users|length }}</p> <!-- debug -->
+
+<form id="sendMessageForm">
+    <div class="mb-3">
+        <label for="recipient" class="form-label">Recipient</label>
+        <select id="recipient" class="form-select">
+            {% for user in users %}
+                <option value="{{ user.id }}">{{ user.get_full_name }} {% if user.is_staff %}(Staff){% endif %}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="subject" class="form-label">Subject</label>
+        <input type="text" id="subject" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label for="message" class="form-label">Message</label>
+        <textarea id="message" class="form-control"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Send</button>
+</form>
+
+<script>
+document.getElementById('sendMessageForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const recipient_id = document.getElementById('recipient').value;
+    const subject = document.getElementById('subject').value;
+    const message = document.getElementById('message').value;
+
+    fetch("{% url 'send_message' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({
+            recipient: recipient_id, // matches view
+            subject: subject,
+            body: message           // matches view
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert('Message sent!');
+            document.getElementById('sendMessageForm').reset();
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(err => console.error(err));
+});
+</script>
+{% endblock %}

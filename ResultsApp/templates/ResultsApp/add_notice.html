@@ -1,0 +1,165 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+{% block content %}
+
+<!-- ================= MESSAGES ================= -->
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert 
+            {% if message.tags == 'success' %}alert-success
+            {% elif message.tags == 'error' %}alert-danger
+            {% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4 text-center">
+        <i class="fas fa-bullhorn text-primary"></i> Add New Notice
+    </h2>
+
+    <div class="row g-4">
+        <!-- ================= FORM ================= -->
+        <div class="col-lg-6">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">Notice Title</label>
+                    <input type="text" class="form-control" id="title" name="title" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Notice Details</label>
+                    <textarea class="form-control" rows="5" id="details" name="details" required></textarea>
+                    <small class="text-muted">URLs in your text will be clickable in preview and after submission.</small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Optional Image</label>
+                    <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Optional File Attachment</label>
+                    <input type="file" class="form-control" id="attachment" name="attachment">
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-check-circle"></i> Submit
+                </button>
+            </form>
+        </div>
+
+        <!-- ================= LIVE PREVIEW ================= -->
+        <div class="col-lg-6">
+            <h4 class="mb-3 text-center">Live Preview</h4>
+            <div class="card shadow-sm p-3" style="min-height: 300px;">
+                <h5 class="card-title text-primary" id="preview-title">Notice Title Here</h5>
+                <p class="card-text" id="preview-details">Notice details will appear here...</p>
+
+                <!-- Image preview -->
+                <img id="preview-image" src="" alt="Image Preview" class="img-fluid my-2" style="display:none; max-height:150px; border-radius:5px;">
+
+                <!-- File attachment preview -->
+                <div id="preview-attachment" style="display:none;">
+                    <a href="#" class="btn btn-sm btn-outline-primary" target="_blank">
+                        <i class="fas fa-download"></i> File Attachment
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-5">
+
+    <!-- ================= PUBLISHED NOTICES ================= -->
+    <h3 class="mb-3 text-center">Published Notices</h3>
+
+    {% for notice in notices %}
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <strong>{{ notice.title }}</strong>
+                <small>{{ notice.posting_date|date:"d M Y, H:i" }}</small>
+            </div>
+            <div class="card-body">
+                <p>{{ notice.details|urlize|linebreaksbr }}</p>
+
+                {% if notice.image %}
+                    <img src="{{ notice.image.url }}" class="img-fluid mb-2" style="max-height:150px; border-radius:5px;">
+                {% endif %}
+
+                {% if notice.attachment %}
+                    <div>
+                        <a href="{{ notice.attachment.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-download"></i> {{ notice.attachment.name|slice:"10:" }}
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% empty %}
+        <p class="text-center text-muted">No notices have been published yet.</p>
+    {% endfor %}
+</div>
+
+<!-- ================= LIVE PREVIEW SCRIPT ================= -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const titleInput = document.getElementById('title');
+    const detailsInput = document.getElementById('details');
+    const imageInput = document.getElementById('image');
+    const attachmentInput = document.getElementById('attachment');
+
+    const previewTitle = document.getElementById('preview-title');
+    const previewDetails = document.getElementById('preview-details');
+    const previewImage = document.getElementById('preview-image');
+    const previewAttachment = document.getElementById('preview-attachment');
+    const previewAttachmentLink = previewAttachment.querySelector('a');
+
+    function linkify(text) {
+        const urlPattern = /(https?:\/\/[^\s]+)/g;
+        return text.replace(urlPattern, '<a href="$1" target="_blank">$1</a>');
+    }
+
+    function updatePreview() {
+        // Update title and details
+        previewTitle.textContent = titleInput.value || 'Notice Title Here';
+        previewDetails.innerHTML = linkify(detailsInput.value || 'Notice details will appear here...');
+
+        // Preview image
+        if (imageInput.files && imageInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block';
+            };
+            reader.readAsDataURL(imageInput.files[0]);
+        } else {
+            previewImage.style.display = 'none';
+        }
+
+        // Preview attachment
+        if (attachmentInput.files && attachmentInput.files[0]) {
+            const file = attachmentInput.files[0];
+            previewAttachmentLink.href = '#';
+            previewAttachmentLink.innerHTML = `<i class="fas fa-download"></i> ${file.name}`;
+            previewAttachment.style.display = 'block';
+        } else {
+            previewAttachment.style.display = 'none';
+        }
+    }
+
+    titleInput.addEventListener('input', updatePreview);
+    detailsInput.addEventListener('input', updatePreview);
+    imageInput.addEventListener('change', updatePreview);
+    attachmentInput.addEventListener('change', updatePreview);
+
+    updatePreview(); // Initial call
+});
+</script>
+
+{% endblock %}

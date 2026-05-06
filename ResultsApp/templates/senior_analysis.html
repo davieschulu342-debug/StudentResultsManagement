@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% load grade_filters.py %}
+
+{% block content %}
+<h2>Senior Results Analysis</h2>
+
+<!-- Filter Form -->
+<form method="get" class="mb-4">
+    <div>
+        <label for="class">Class:</label>
+        <select name="class" id="class" required>
+            <option value="">-- Select Class --</option>
+            {% for cls in classes %}
+                <option value="{{ cls.id }}" {% if cls.id|stringformat:"s" == selected_class_id %}selected{% endif %}>
+                    {{ cls.class_name }} {{ cls.numeric_name }} {{ cls.section }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label for="term">Term:</label>
+        <select name="term" id="term" required>
+            <option value="">-- Select Term --</option>
+            {% for term in terms %}
+                <option value="{{ term }}" {% if term == selected_term %}selected{% endif %}>
+                    {{ term }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label for="test_type">Test Type:</label>
+        <select name="test_type" id="test_type" required>
+            <option value="">-- Select Test Type --</option>
+            {% for tt in test_types %}
+                <option value="{{ tt }}" {% if tt == selected_test_type %}selected{% endif %}>
+                    {{ tt }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <button type="submit">Analyze</button>
+</form>
+
+<!-- Analysis Table -->
+{% if analysis_summary %}
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Gender</th>
+                {% for grade in grades %}
+                    <th>{{ grade }}</th>
+                {% endfor %}
+                <th>Total Marks</th>
+                <th>Average</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in analysis_summary %}
+                <tr>
+                    <td>{{ row.student_name }}</td>
+                    <td>{{ row.gender }}</td>
+                    {% for grade in grades %}
+                        <td>{{ row.grade_counts|get_item:grade }}</td>
+                    {% endfor %}
+                    <td>{{ row.total_marks }}</td>
+                    <td>{{ row.average }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    {% if selected_class_id and selected_term and selected_test_type %}
+        <p>No results found for the selected filters.</p>
+    {% endif %}
+{% endif %}
+
+{% endblock %}

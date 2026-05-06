@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-3">Send Message</h3>
+
+    <div class="card">
+        <div class="card-body">
+            <form id="send-message-form" onsubmit="sendMessage(event)">
+                {% csrf_token %}
+                
+                <!-- Recipient -->
+                <div class="mb-3">
+                    <label for="recipient" class="form-label">Recipient</label>
+                   <select name="recipient" class="form-select" required>
+    <option value="">Select Recipient</option>
+    {% for user in users %}
+        <option value="{{ user.id }}" {% if recipient and user.id == recipient.id %}selected{% endif %}>
+            {{ user.get_full_name|default:user.username }}
+        </option>
+    {% endfor %}
+</select>
+
+
+                    </select>
+                </div>
+
+                <!-- Subject -->
+                <div class="mb-3">
+                    <label for="subject" class="form-label">Subject</label>
+                    <input type="text" id="subject" class="form-control" placeholder="Message subject" required>
+                </div>
+
+                <!-- Message Body -->
+                <div class="mb-3">
+                    <label for="body" class="form-label">Message</label>
+                    <textarea id="body" class="form-control" rows="4" placeholder="Type your message..." required></textarea>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="btn btn-success">Send</button>
+            </form>
+
+            <!-- Feedback -->
+            <div id="msg-feedback" class="mt-3"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function sendMessage(e) {
+    e.preventDefault();
+
+    const recipient = document.getElementById("recipient").value;
+    const subject = document.getElementById("subject").value;
+    const body = document.getElementById("body").value;
+    const feedback = document.getElementById("msg-feedback");
+
+    if (!recipient || !subject || !body) {
+        feedback.innerHTML = '<div class="alert alert-danger">All fields are required.</div>';
+        return;
+    }
+
+    try {
+        const res = await fetch("{% url 'send_message' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ recipient, subject, body })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            feedback.innerHTML = '<div class="alert alert-success">Message sent successfully!</div>';
+            document.getElementById("send-message-form").reset();
+        } else {
+            feedback.innerHTML = `<div class="alert alert-danger">${data.error || 'Failed to send message.'}</div>`;
+        }
+
+    } catch (err) {
+        feedback.innerHTML = `<div class="alert alert-danger">Error sending message. Check console for details.</div>`;
+        console.error(err);
+    }
+}
+</script>
+{% endblock %}

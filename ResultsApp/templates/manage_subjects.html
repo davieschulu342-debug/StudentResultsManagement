@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{# 🔴 Disable Top Bar and Navbar #}
+{% block top_bar %}{% endblock %}
+{% block main_navbar %}{% endblock %}
+
+{% block content %}
+<div class="container mt-1">
+
+    <a href="{% url dashboard_url %}" class="btn btn-secondary mb-3">
+        &larr; Back to Dashboard
+    </a>
+
+    <h2 class="mb-4">
+        <i class="fas fa-tasks text-dark"></i>
+        Manage Subjects
+
+        {% if teacher_departments %}
+            <small class="text-muted">
+                for
+                {% for dept in teacher_departments %}
+                    {{ dept.department_name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </small>
+        {% endif %}
+    </h2>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>S.No</th>
+                <th>Subject Name</th>
+                <th>Subject Code</th>
+                <th>Department</th>
+                <th>Created On</th>
+                <th>Updated On</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for subject in subjects %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ subject.subject_name }}</td>
+                    <td>{{ subject.subject_code }}</td>
+                    <td>{{ subject.department.department_name }}</td>
+                    <td>{{ subject.creation_date }}</td>
+                    <td>{{ subject.updation_date }}</td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <a href="{% url 'edit_subject' subject.id %}"
+                               class="btn btn-sm btn-primary flex-fill">
+                                Edit
+                            </a>
+
+                            <form action="{% url 'delete_subject' subject.id %}"
+                                  method="POST"
+                                  class="m-0 p-0 flex-fill">
+                                {% csrf_token %}
+                                <button type="submit"
+                                        class="btn btn-sm btn-danger w-100"
+                                        onclick="return confirm('Are you sure?');">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted">
+                        No subjects found for your department(s).
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}

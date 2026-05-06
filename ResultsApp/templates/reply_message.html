@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Reply to {{ original_msg.sender.get_full_name|default:original_msg.sender.username }}</h3>
+
+<form method="POST">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label>Subject</label>
+        <input type="text" class="form-control" name="subject" value="Re: {{ original_msg.subject }}" required>
+    </div>
+    <div class="mb-3">
+        <label>Message</label>
+        <textarea class="form-control" name="body" rows="5" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Send Reply</button>
+</form>
+{% endblock %}

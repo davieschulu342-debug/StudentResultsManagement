@@ -1,0 +1,28 @@
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Student</th>
+            <th>Subject</th>
+            <th>Marks</th>
+            <th>Test</th>
+            <th>Term</th>
+            <th>Year</th>
+            <th>Changed By</th>
+            <th>Change Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for record in history %}
+        <tr>
+            <td>{{ record.student }}</td>
+            <td>{{ record.subject }}</td>
+            <td>{{ record.marks }}</td>
+            <td>{{ record.test_type }}</td>
+            <td>{{ record.term }}</td>
+            <td>{{ record.year }}</td>
+            <td>{{ record.history_user }}</td>
+            <td>{{ record.history_date }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

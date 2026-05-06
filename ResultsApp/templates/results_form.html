@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card p-4 shadow-sm">
+
+        <h4 class="text-center mb-4">Confirm Student Report Details</h4>
+
+        <div class="mb-3">
+            <p><strong>Student:</strong> {{ student.first_name }} {{ student.last_name }}</p>
+            <p><strong>Exam Number:</strong> {{ student.exam_no }}</p>
+            <p><strong>Class:</strong> {{ student.student_class }}</p>
+            <p><strong>Term:</strong> {{ term }}</p>
+            <p><strong>Test Type:</strong> {{ test_type }}</p>
+            <p><strong>Year:</strong> {{ year }}</p>
+        </div>
+
+        <hr>
+
+        <!-- FINAL SUBMIT TO GENERATE PDF -->
+        <form method="POST" action="{% url 'generate_student_report' %}">
+            {% csrf_token %}
+
+            <!-- ONLY REQUIRED DATA -->
+            <input type="hidden" name="student_id" value="{{ student.id }}">
+            <input type="hidden" name="term" value="{{ term }}">
+            <input type="hidden" name="test_type" value="{{ test_type }}">
+
+            <button type="submit" class="btn btn-success w-100">
+                Generate PDF Report
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

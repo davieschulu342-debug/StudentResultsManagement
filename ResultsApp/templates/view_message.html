@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+.card-message {
+    margin-bottom: 1rem;
+}
+.card-message .card-header {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+.card-message .card-body {
+    white-space: pre-wrap; /* preserves line breaks */
+}
+.message-actions button {
+    margin-right: 0.5rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <a href="{% url 'inbox' %}" class="btn btn-outline-primary mb-3">
+        &larr; Back to Inbox
+    </a>
+
+    <div class="card card-message">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-1">{{ message.subject }}</h5>
+                <small class="text-muted">
+                    From: {{ message.sender.get_full_name|default:message.sender.username }} | 
+                    Sent: {{ message.created_at|date:"M d, Y H:i" }}
+                </small>
+            </div>
+        </div>
+        <div class="card-body">
+            <p>{{ message.body }}</p>
+        </div>
+        <div class="card-footer message-actions d-flex gap-2">
+            {% if not message.is_read %}
+            <button class="btn btn-sm btn-success" onclick="markAsRead({{ message.id }})">
+                Mark as Read
+            </button>
+            {% endif %}
+            <button class="btn btn-sm btn-primary" onclick="replyMessage({{ message.id }})">
+                Reply
+            </button>
+            <button class="btn btn-sm btn-danger" onclick="deleteMessage({{ message.id }})">
+                Delete
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function csrf() {
+    return document.cookie.split('; ')
+        .find(r => r.startsWith('csrftoken='))
+        ?.split('=')[1];
+}
+
+function markAsRead(id) {
+    fetch(`/messages/read/${id}/`, {
+        method: "POST",
+        headers: { "X-CSRFToken": csrf() }
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.success) {
+            alert("Message marked as read!");
+            location.reload();
+        }
+    });
+}
+
+function replyMessage(id) {
+    // Redirect to your reply/compose page with this message ID
+    window.location.href = `/messages/${id}/reply/`;
+}
+
+function deleteMessage(id) {
+    if (!confirm("Are you sure you want to delete this message?")) return;
+
+    fetch(`/messages/delete/${id}/`, {
+        method: "POST",
+        headers: { "X-CSRFToken": csrf() }
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.success) {
+            alert("Message deleted!");
+            window.location.href = "{% url 'inbox' %}";
+        }
+    });
+}
+</script>
+{% endblock %}

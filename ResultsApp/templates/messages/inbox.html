@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card-body" id="inboxContainer">
+
+    <!-- MARK ALL AS READ BUTTON -->
+    <button class="btn btn-sm btn-secondary mb-2" onclick="clearInbox()">Mark all as read</button>
+
+    {% if messages %}
+    <ul class="list-group">
+        {% for msg in messages %}
+        <li class="list-group-item d-flex justify-content-between align-items-start" id="msg-{{ msg.id }}">
+            <div class="ms-2 me-auto">
+                <div>
+                    <strong>{{ msg.sender.get_full_name|default:msg.sender.username }}</strong>
+                    <small class="text-muted">({{ msg.timestamp|date:"M d, Y H:i" }})</small>
+                </div>
+                <div>{{ msg.subject }}</div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                {% if not msg.is_read %}
+                <span class="badge bg-primary rounded-pill">New</span>
+                {% endif %}
+                <button class="btn btn-sm btn-danger delete-btn" data-id="{{ msg.id }}">
+                    Delete
+                </button>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-muted">No messages in your inbox.</p>
+    {% endif %}
+</div>
+            </div>
+        </div>
+
+        <!-- SEND MESSAGE -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Send Message</h5>
+                </div>
+                <div class="card-body">
+                    <form id="sendMessageForm" 
+                          data-csrf="{{ csrf_token }}" 
+                          data-url="{% url 'send_message' %}">
+                        <div class="mb-3">
+                            <label for="recipient" class="form-label">Recipient</label>
+                            <select id="recipient" class="form-select" required>
+                                <option value="">Select a user...</option>
+                                {% for user in staff_users %}
+                                <option value="{{ user.id }}">{{ user.get_full_name|default:user.username }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">Subject</label>
+                            <input type="text" id="subject" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="body" class="form-label">Message</label>
+                            <textarea id="body" class="form-control" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Send</button>
+                    </form>
+                    <div id="sendMessageFeedback" class="mt-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+.list-group-item {
+    margin-bottom: 0.5rem;
+    border-radius: 0.5rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('sendMessageForm');
+    const csrfToken = form.dataset.csrf;
+    const sendMessageUrl = form.dataset.url;
+
+    // DELETE MESSAGE
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const messageId = this.dataset.id;
+            if (!confirm('Are you sure you want to delete this message?')) return;
+
+            fetch(`/messages/delete/${messageId}/`, {
+                method: 'POST',
+                headers: { 
+                    'X-CSRFToken': csrfToken,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const elem = document.getElementById('msg-' + messageId);
+                    if (elem) elem.remove();
+                } else {
+                    alert('Failed to delete message.');
+                }
+            })
+            .catch(err => console.error(err));
+        });
+    });
+
+    // SEND MESSAGE
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const recipient = document.getElementById('recipient').value;
+        const subject = document.getElementById('subject').value;
+        const body = document.getElementById('body').value;
+
+        fetch(sendMessageUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken,
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({ recipient, subject, body })
+        })
+        .then(res => res.json())
+        .then(data => {
+            const feedback = document.getElementById('sendMessageFeedback');
+            if (data.success) {
+                feedback.innerHTML = '<span class="text-success">Message sent successfully!</span>';
+                form.reset();
+            } else {
+                feedback.innerHTML = '<span class="text-danger">Error: ' + (data.error || 'Unknown error') + '</span>';
+            }
+        })
+        .catch(err => console.error(err));
+    });
+});
+function clearInbox() {
+    fetch("{% url 'clear_messages' %}", {
+        method: 'POST',
+        headers: { 'X-CSRFToken': '{{ csrf_token }}', 'Accept': 'application/json' }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success){
+            // Remove "New" badges and mark messages visually as read
+            document.querySelectorAll('#inboxContainer .badge').forEach(b => b.remove());
+        }
+    })
+    .catch(err => console.error(err));
+}
+
+</script>
+{% endblock %}
