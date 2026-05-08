@@ -73,8 +73,11 @@ WSGI_APPLICATION = 'StudentResultsManagement.wsgi.application'
 # CHANNELS (OK for now, production upgrade later)
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
-    }
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.environ.get("REDIS_URL")],
+        },
+    },
 }
 
 
@@ -96,7 +99,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # INTERNATIONALIZATION
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
@@ -104,6 +106,7 @@ USE_TZ = True
 # STATIC FILES (FIXED FOR RENDER)
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
@@ -120,7 +123,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = os.environ.get("EMAIL_HOST_USER", "davieschulu342@gmail.com")
 
 
 # SESSIONS
